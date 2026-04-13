@@ -121,6 +121,24 @@ struct ContextManager {
         return lines
     }
 
+    func buildInstructions(name: String, tone: Tone) -> String {
+        """
+        You are a thoughtful assistant helping craft a message to \(name).
+        Your response should sound natural — like something a real person
+        would actually type in a chat. Match the tone: \(tone.displayName.lowercased()).
+
+        Rules:
+        - Write ONLY the message text, no labels or quotes
+        - Keep it concise (2-4 sentences typically)
+        - Be genuine, not cliche or over-the-top
+        - Use the context provided — never invent facts about the user's life
+        - Match the energy level of her message
+        - If she asked a question, answer it using the user's real context
+
+        \(tone.modifier)
+        """
+    }
+
     func prepareContext(
         profile: WomanProfileData,
         herMessage: String,

@@ -15,6 +15,7 @@
 		9F80D88844FE6FE7D9E58C89 /* FlirtyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */; };
 		CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0308F32460508FAF10EA1 /* FlirtyApp.swift */; };
 		F66661F10D890B0EA21B3074 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429821EB16D81C68472A4468 /* Conversation.swift */; };
+		FF502C6E2F754B63D960D49F /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E85159FE06E41031375F133 /* AIService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +34,7 @@
 		429821EB16D81C68472A4468 /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 		63E0308F32460508FAF10EA1 /* FlirtyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyApp.swift; sourceTree = "<group>"; };
 		6770A6C5A35447F3F97E75D4 /* Tone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tone.swift; sourceTree = "<group>"; };
+		6E85159FE06E41031375F133 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		9134963B9FEBFCF5CF9FC5B8 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		D82CB9217473269ADF816553 /* WomanProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WomanProfile.swift; sourceTree = "<group>"; };
 		DE6E5984DABB1E018AE6C7E6 /* Flirty.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Flirty.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -91,6 +93,7 @@
 		99DFCABECABD3F2DBF8FB3B0 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				6E85159FE06E41031375F133 /* AIService.swift */,
 				F19E349D554A58B34BF9B913 /* ContextManager.swift */,
 			);
 			path = Services;
@@ -113,7 +116,7 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
-		"TEMP_751089FB-5362-4042-B6D3-5FDFEFC9D098" /* Resources */ = {
+		"TEMP_71D50603-2E81-4767-AAA7-4EF7B15BA405" /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -194,6 +197,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF502C6E2F754B63D960D49F /* AIService.swift in Sources */,
 				7FA89F2DCFDC5730E84DC84D /* AppTheme.swift in Sources */,
 				3B0A9B6238A30FFFDD5807F7 /* ContextManager.swift in Sources */,
 				F66661F10D890B0EA21B3074 /* Conversation.swift in Sources */,
