@@ -35,6 +35,7 @@ struct WomenListView: View {
                             .background(AppTheme.primaryGradient)
                             .clipShape(Circle())
                     }
+                    .accessibilityIdentifier("addProfileButton")
                 }
             }
             .sheet(isPresented: $showingAddSheet) {
@@ -51,6 +52,7 @@ struct WomenListView: View {
             Text("No conversations yet")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(AppTheme.textPrimary)
+                .accessibilityIdentifier("emptyStateTitle")
             Text("Tap + to add someone and start crafting\nthoughtful messages")
                 .font(.system(size: 14))
                 .foregroundStyle(AppTheme.textSecondary)

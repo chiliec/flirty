@@ -64,6 +64,7 @@ struct ChatView: View {
                         .font(.system(size: 14))
                         .foregroundStyle(AppTheme.violet)
                 }
+                .accessibilityIdentifier("notesButton")
             }
         }
         .sheet(isPresented: $showingNotes) {
@@ -134,6 +135,7 @@ struct ChatView: View {
                     .foregroundStyle(AppTheme.textMuted)
                 TextField("Paste her message here...", text: $herMessage, axis: .vertical)
                     .textFieldStyle(.plain)
+                    .accessibilityIdentifier("herMessageField")
                     .font(.system(size: 13))
                     .foregroundStyle(AppTheme.textPrimary)
                     .lineLimit(1...6)
@@ -152,6 +154,7 @@ struct ChatView: View {
             // User context input
             TextField("Add real context... (optional)", text: $userContext)
                 .textFieldStyle(.plain)
+                .accessibilityIdentifier("userContextField")
                 .font(.system(size: 12))
                 .foregroundStyle(AppTheme.textPrimary)
                 .padding(12)
@@ -192,6 +195,7 @@ struct ChatView: View {
             }
             .buttonStyle(.plain)
             .disabled(herMessage.isEmpty || isGenerating)
+            .accessibilityIdentifier("generateButton")
         }
     }
 

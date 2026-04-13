@@ -30,6 +30,7 @@ struct AddWomanView: View {
                             .foregroundStyle(AppTheme.textSecondary)
                         TextField("Her name", text: $name)
                             .textFieldStyle(.plain)
+                            .accessibilityIdentifier("nameField")
                             .font(.system(size: 16))
                             .foregroundStyle(AppTheme.textPrimary)
                             .padding(14)
@@ -48,6 +49,7 @@ struct AddWomanView: View {
                             .foregroundStyle(AppTheme.textSecondary)
                         TextField("e.g., loves hiking, works in design", text: $firstNote)
                             .textFieldStyle(.plain)
+                            .accessibilityIdentifier("firstNoteField")
                             .font(.system(size: 14))
                             .foregroundStyle(AppTheme.textPrimary)
                             .padding(14)
@@ -74,6 +76,7 @@ struct AddWomanView: View {
                     Button("Save") { save() }
                         .foregroundStyle(name.isEmpty ? AppTheme.textMuted : AppTheme.violet)
                         .disabled(name.isEmpty)
+                        .accessibilityIdentifier("saveButton")
                 }
             }
         }

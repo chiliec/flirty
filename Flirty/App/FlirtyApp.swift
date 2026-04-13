@@ -5,12 +5,19 @@ import SwiftData
 struct FlirtyApp: App {
     @State private var aiService = AIService()
 
+    private var isUITesting: Bool {
+        ProcessInfo.processInfo.arguments.contains("--ui-testing")
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView(aiService: aiService)
                 .preferredColorScheme(.dark)
         }
-        .modelContainer(for: [WomanProfile.self, Conversation.self])
+        .modelContainer(
+            for: [WomanProfile.self, Conversation.self],
+            inMemory: isUITesting
+        )
     }
 }
 
@@ -57,7 +64,11 @@ struct RootView: View {
     }
 
     private func checkAvailability() {
-        availability = aiService.checkAvailability()
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
+            availability = .available
+        } else {
+            availability = aiService.checkAvailability()
+        }
     }
 }
 

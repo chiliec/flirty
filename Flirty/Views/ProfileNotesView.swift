@@ -71,6 +71,7 @@ struct ProfileNotesView: View {
                         HStack(spacing: 8) {
                             TextField("Add a note...", text: $newNote)
                                 .textFieldStyle(.plain)
+                                .accessibilityIdentifier("addNoteField")
                                 .font(.system(size: 14))
                                 .foregroundStyle(AppTheme.textPrimary)
                                 .padding(10)
@@ -91,6 +92,7 @@ struct ProfileNotesView: View {
                             }
                             .buttonStyle(.plain)
                             .disabled(newNote.isEmpty)
+                            .accessibilityIdentifier("addNoteButton")
                         }
                     }
                     .padding(.horizontal, 20)

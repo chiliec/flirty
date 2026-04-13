@@ -31,3 +31,13 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flirty.tests
+  FlirtyUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - FlirtyUITests
+    dependencies:
+      - target: Flirty
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flirty.uitests
