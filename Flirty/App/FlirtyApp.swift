@@ -7,5 +7,6 @@ struct FlirtyApp: App {
         WindowGroup {
             Text("Flirty")
         }
+        .modelContainer(for: [WomanProfile.self, Conversation.self])
     }
 }
