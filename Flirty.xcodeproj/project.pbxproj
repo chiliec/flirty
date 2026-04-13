@@ -7,8 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		27436C17B7967D41963D2704 /* ContextManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D43D9B9E99C9DA13C1DD96 /* ContextManagerTests.swift */; };
+		3B0A9B6238A30FFFDD5807F7 /* ContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19E349D554A58B34BF9B913 /* ContextManager.swift */; };
+		3DFB12A5FFECA99910CFE6D3 /* Tone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6770A6C5A35447F3F97E75D4 /* Tone.swift */; };
+		7A6F2E39229A923A744D210D /* WomanProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82CB9217473269ADF816553 /* WomanProfile.swift */; };
+		7FA89F2DCFDC5730E84DC84D /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9134963B9FEBFCF5CF9FC5B8 /* AppTheme.swift */; };
 		9F80D88844FE6FE7D9E58C89 /* FlirtyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */; };
 		CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0308F32460508FAF10EA1 /* FlirtyApp.swift */; };
+		F66661F10D890B0EA21B3074 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429821EB16D81C68472A4468 /* Conversation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,8 +29,14 @@
 
 /* Begin PBXFileReference section */
 		041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyTests.swift; sourceTree = "<group>"; };
+		28D43D9B9E99C9DA13C1DD96 /* ContextManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextManagerTests.swift; sourceTree = "<group>"; };
+		429821EB16D81C68472A4468 /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
 		63E0308F32460508FAF10EA1 /* FlirtyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyApp.swift; sourceTree = "<group>"; };
+		6770A6C5A35447F3F97E75D4 /* Tone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tone.swift; sourceTree = "<group>"; };
+		9134963B9FEBFCF5CF9FC5B8 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		D82CB9217473269ADF816553 /* WomanProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WomanProfile.swift; sourceTree = "<group>"; };
 		DE6E5984DABB1E018AE6C7E6 /* Flirty.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Flirty.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F19E349D554A58B34BF9B913 /* ContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextManager.swift; sourceTree = "<group>"; };
 		F6B589A520241B600FB322B7 /* FlirtyTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FlirtyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -50,16 +62,38 @@
 			isa = PBXGroup;
 			children = (
 				124D621AE3C950B90074BFCF /* App */,
+				3BDC7722A6FC500210ACEC1E /* Models */,
+				99DFCABECABD3F2DBF8FB3B0 /* Services */,
+				EC36051E16534746B60CF37E /* Theme */,
 			);
 			path = Flirty;
+			sourceTree = "<group>";
+		};
+		3BDC7722A6FC500210ACEC1E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				429821EB16D81C68472A4468 /* Conversation.swift */,
+				6770A6C5A35447F3F97E75D4 /* Tone.swift */,
+				D82CB9217473269ADF816553 /* WomanProfile.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		875DAE234DDED0BFCD4DD200 /* FlirtyTests */ = {
 			isa = PBXGroup;
 			children = (
+				28D43D9B9E99C9DA13C1DD96 /* ContextManagerTests.swift */,
 				041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */,
 			);
 			path = FlirtyTests;
+			sourceTree = "<group>";
+		};
+		99DFCABECABD3F2DBF8FB3B0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F19E349D554A58B34BF9B913 /* ContextManager.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		B73E3D0C354BCFF04CCFFF2F = {
@@ -71,7 +105,15 @@
 			);
 			sourceTree = "<group>";
 		};
-		"TEMP_0723866E-AD29-451A-963B-602BE383A959" /* Resources */ = {
+		EC36051E16534746B60CF37E /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				9134963B9FEBFCF5CF9FC5B8 /* AppTheme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		"TEMP_751089FB-5362-4042-B6D3-5FDFEFC9D098" /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -152,7 +194,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7FA89F2DCFDC5730E84DC84D /* AppTheme.swift in Sources */,
+				3B0A9B6238A30FFFDD5807F7 /* ContextManager.swift in Sources */,
+				F66661F10D890B0EA21B3074 /* Conversation.swift in Sources */,
 				CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */,
+				3DFB12A5FFECA99910CFE6D3 /* Tone.swift in Sources */,
+				7A6F2E39229A923A744D210D /* WomanProfile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,6 +207,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27436C17B7967D41963D2704 /* ContextManagerTests.swift in Sources */,
 				9F80D88844FE6FE7D9E58C89 /* FlirtyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
