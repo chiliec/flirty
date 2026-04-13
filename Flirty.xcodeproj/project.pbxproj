@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		27436C17B7967D41963D2704 /* ContextManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D43D9B9E99C9DA13C1DD96 /* ContextManagerTests.swift */; };
+		3AB84D9A4187A3E53A74C938 /* ResponseBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11EF6741605E481B8DB59FAC /* ResponseBubble.swift */; };
 		3B0A9B6238A30FFFDD5807F7 /* ContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19E349D554A58B34BF9B913 /* ContextManager.swift */; };
 		3DFB12A5FFECA99910CFE6D3 /* Tone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6770A6C5A35447F3F97E75D4 /* Tone.swift */; };
 		41114367E45ABDE1F72A6378 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07315EE8CC0F59D077600BC1 /* ChatView.swift */; };
@@ -35,6 +36,7 @@
 /* Begin PBXFileReference section */
 		041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyTests.swift; sourceTree = "<group>"; };
 		07315EE8CC0F59D077600BC1 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		11EF6741605E481B8DB59FAC /* ResponseBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseBubble.swift; sourceTree = "<group>"; };
 		1D84BE0210AD48C6DFA19D6E /* TonePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TonePicker.swift; sourceTree = "<group>"; };
 		1F411AA95D178B68C0A3E216 /* WomenListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WomenListView.swift; sourceTree = "<group>"; };
 		28D43D9B9E99C9DA13C1DD96 /* ContextManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextManagerTests.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 			children = (
 				2F761A36C0B74725D143D79E /* AddWomanView.swift */,
 				07315EE8CC0F59D077600BC1 /* ChatView.swift */,
+				11EF6741605E481B8DB59FAC /* ResponseBubble.swift */,
 				1D84BE0210AD48C6DFA19D6E /* TonePicker.swift */,
 				1F411AA95D178B68C0A3E216 /* WomenListView.swift */,
 			);
@@ -136,7 +139,7 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
-		"TEMP_FC350585-A675-4AEA-B978-D3CA67557093" /* Resources */ = {
+		"TEMP_87EE9B19-5162-4EE8-98C8-6F94C8F1DD4E" /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -224,6 +227,7 @@
 				3B0A9B6238A30FFFDD5807F7 /* ContextManager.swift in Sources */,
 				F66661F10D890B0EA21B3074 /* Conversation.swift in Sources */,
 				CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */,
+				3AB84D9A4187A3E53A74C938 /* ResponseBubble.swift in Sources */,
 				3DFB12A5FFECA99910CFE6D3 /* Tone.swift in Sources */,
 				F641BAE1CFD93507DB1555D8 /* TonePicker.swift in Sources */,
 				7A6F2E39229A923A744D210D /* WomanProfile.swift in Sources */,
