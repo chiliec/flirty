@@ -1,0 +1,402 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9F80D88844FE6FE7D9E58C89 /* FlirtyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */; };
+		CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0308F32460508FAF10EA1 /* FlirtyApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0836F7C8EC5AC5B9CCB1E7F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1A55E2233B5347D860286288 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5F7E04370C16A043F3ED4A6D;
+			remoteInfo = Flirty;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyTests.swift; sourceTree = "<group>"; };
+		63E0308F32460508FAF10EA1 /* FlirtyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyApp.swift; sourceTree = "<group>"; };
+		DE6E5984DABB1E018AE6C7E6 /* Flirty.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Flirty.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6B589A520241B600FB322B7 /* FlirtyTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FlirtyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		124D621AE3C950B90074BFCF /* App */ = {
+			isa = PBXGroup;
+			children = (
+				63E0308F32460508FAF10EA1 /* FlirtyApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		20C150F6D7A0D4D9CF1B31EA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DE6E5984DABB1E018AE6C7E6 /* Flirty.app */,
+				F6B589A520241B600FB322B7 /* FlirtyTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		37F7A2A9CF08B6F9CC2F5938 /* Flirty */ = {
+			isa = PBXGroup;
+			children = (
+				124D621AE3C950B90074BFCF /* App */,
+			);
+			path = Flirty;
+			sourceTree = "<group>";
+		};
+		875DAE234DDED0BFCD4DD200 /* FlirtyTests */ = {
+			isa = PBXGroup;
+			children = (
+				041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */,
+			);
+			path = FlirtyTests;
+			sourceTree = "<group>";
+		};
+		B73E3D0C354BCFF04CCFFF2F = {
+			isa = PBXGroup;
+			children = (
+				37F7A2A9CF08B6F9CC2F5938 /* Flirty */,
+				875DAE234DDED0BFCD4DD200 /* FlirtyTests */,
+				20C150F6D7A0D4D9CF1B31EA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		"TEMP_0723866E-AD29-451A-963B-602BE383A959" /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2369DBF1B34F21C35E55D3AF /* FlirtyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F65E0CA26199B0B2E93CD8E2 /* Build configuration list for PBXNativeTarget "FlirtyTests" */;
+			buildPhases = (
+				EE9AA3699A9480448396CA74 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2430315049C93EF6D520E1F0 /* PBXTargetDependency */,
+			);
+			name = FlirtyTests;
+			packageProductDependencies = (
+			);
+			productName = FlirtyTests;
+			productReference = F6B589A520241B600FB322B7 /* FlirtyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		5F7E04370C16A043F3ED4A6D /* Flirty */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E839477312D211478210A7AA /* Build configuration list for PBXNativeTarget "Flirty" */;
+			buildPhases = (
+				78D6E6DDF066B5A3CE875323 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Flirty;
+			packageProductDependencies = (
+			);
+			productName = Flirty;
+			productReference = DE6E5984DABB1E018AE6C7E6 /* Flirty.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1A55E2233B5347D860286288 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2640;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 92C1BED995647A577D926382 /* Build configuration list for PBXProject "Flirty" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = B73E3D0C354BCFF04CCFFF2F;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 20C150F6D7A0D4D9CF1B31EA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5F7E04370C16A043F3ED4A6D /* Flirty */,
+				2369DBF1B34F21C35E55D3AF /* FlirtyTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		78D6E6DDF066B5A3CE875323 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE9AA3699A9480448396CA74 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F80D88844FE6FE7D9E58C89 /* FlirtyTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2430315049C93EF6D520E1F0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5F7E04370C16A043F3ED4A6D /* Flirty */;
+			targetProxy = 0836F7C8EC5AC5B9CCB1E7F7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		15CC89C257072FD56ED5CC9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flirty.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		32053A8ED63BD32256606D18 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flirty.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		5EA6D23F9E00B6E0E5B78278 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flirty.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Flirty.app/Flirty";
+			};
+			name = Release;
+		};
+		A0A25FA06FFEE4242925CD60 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flirty.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Flirty.app/Flirty";
+			};
+			name = Debug;
+		};
+		D348AEE9FDBB872E0DB96AC2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.2;
+			};
+			name = Debug;
+		};
+		DE40D8F29B7A67B644E8A933 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		92C1BED995647A577D926382 /* Build configuration list for PBXProject "Flirty" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D348AEE9FDBB872E0DB96AC2 /* Debug */,
+				DE40D8F29B7A67B644E8A933 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E839477312D211478210A7AA /* Build configuration list for PBXNativeTarget "Flirty" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				15CC89C257072FD56ED5CC9D /* Debug */,
+				32053A8ED63BD32256606D18 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F65E0CA26199B0B2E93CD8E2 /* Build configuration list for PBXNativeTarget "FlirtyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0A25FA06FFEE4242925CD60 /* Debug */,
+				5EA6D23F9E00B6E0E5B78278 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1A55E2233B5347D860286288 /* Project object */;
+}
