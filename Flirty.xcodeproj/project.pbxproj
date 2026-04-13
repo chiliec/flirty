@@ -17,6 +17,7 @@
 		9F80D88844FE6FE7D9E58C89 /* FlirtyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */; };
 		CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E0308F32460508FAF10EA1 /* FlirtyApp.swift */; };
 		D22708E00D8B916467AD5A74 /* WomenListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F411AA95D178B68C0A3E216 /* WomenListView.swift */; };
+		F641BAE1CFD93507DB1555D8 /* TonePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D84BE0210AD48C6DFA19D6E /* TonePicker.swift */; };
 		F66661F10D890B0EA21B3074 /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429821EB16D81C68472A4468 /* Conversation.swift */; };
 		FF502C6E2F754B63D960D49F /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E85159FE06E41031375F133 /* AIService.swift */; };
 /* End PBXBuildFile section */
@@ -34,6 +35,7 @@
 /* Begin PBXFileReference section */
 		041D185D1B750BD24DB8BCA2 /* FlirtyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyTests.swift; sourceTree = "<group>"; };
 		07315EE8CC0F59D077600BC1 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		1D84BE0210AD48C6DFA19D6E /* TonePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TonePicker.swift; sourceTree = "<group>"; };
 		1F411AA95D178B68C0A3E216 /* WomenListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WomenListView.swift; sourceTree = "<group>"; };
 		28D43D9B9E99C9DA13C1DD96 /* ContextManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextManagerTests.swift; sourceTree = "<group>"; };
 		2F761A36C0B74725D143D79E /* AddWomanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWomanView.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 			children = (
 				2F761A36C0B74725D143D79E /* AddWomanView.swift */,
 				07315EE8CC0F59D077600BC1 /* ChatView.swift */,
+				1D84BE0210AD48C6DFA19D6E /* TonePicker.swift */,
 				1F411AA95D178B68C0A3E216 /* WomenListView.swift */,
 			);
 			path = Views;
@@ -133,7 +136,7 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
-		"TEMP_7737B408-D48E-4D49-8174-D18DED29B734" /* Resources */ = {
+		"TEMP_FC350585-A675-4AEA-B978-D3CA67557093" /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -222,6 +225,7 @@
 				F66661F10D890B0EA21B3074 /* Conversation.swift in Sources */,
 				CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */,
 				3DFB12A5FFECA99910CFE6D3 /* Tone.swift in Sources */,
+				F641BAE1CFD93507DB1555D8 /* TonePicker.swift in Sources */,
 				7A6F2E39229A923A744D210D /* WomanProfile.swift in Sources */,
 				D22708E00D8B916467AD5A74 /* WomenListView.swift in Sources */,
 			);
