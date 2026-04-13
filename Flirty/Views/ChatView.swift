@@ -1,14 +1,279 @@
 import SwiftUI
+import SwiftData
 
 struct ChatView: View {
+    @Environment(\.modelContext) private var modelContext
     let profile: WomanProfile
+
+    @State private var herMessage = ""
+    @State private var userContext = ""
+    @State private var selectedTone: Tone = .sweet
+    @State private var currentResponse = ""
+    @State private var isGenerating = false
+    @State private var showingNotes = false
+    @State private var showError = false
+    @State private var errorMessage = ""
+
+    @State private var aiService = AIService()
 
     var body: some View {
         ZStack {
             AppTheme.background.ignoresSafeArea()
-            Text("Chat with \(profile.name)")
-                .foregroundStyle(AppTheme.textPrimary)
+
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    VStack(spacing: 12) {
+                        conversationHistory
+                        inputArea
+                        if !currentResponse.isEmpty || isGenerating {
+                            responseArea
+                        }
+                        Color.clear.frame(height: 1).id("bottom")
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .padding(.bottom, 20)
+                }
+                .onChange(of: currentResponse) {
+                    withAnimation {
+                        scrollProxy.scrollTo("bottom")
+                    }
+                }
+            }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                HStack(spacing: 8) {
+                    Text(profile.initial)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .background(AppTheme.avatarGradient(for: profile.gradientIndex))
+                        .clipShape(Circle())
+                    Text(profile.name)
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundStyle(AppTheme.textPrimary)
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingNotes = true
+                } label: {
+                    Image(systemName: "pencil.and.list.clipboard")
+                        .font(.system(size: 14))
+                        .foregroundStyle(AppTheme.violet)
+                }
+            }
+        }
+        .sheet(isPresented: $showingNotes) {
+            ProfileNotesView(profile: profile)
+        }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") {}
+        } message: {
+            Text(errorMessage)
+        }
+        .onAppear {
+            aiService.prewarm()
+        }
     }
+
+    // MARK: - Conversation History
+
+    private var conversationHistory: some View {
+        ForEach(profile.sortedConversations) { conversation in
+            VStack(alignment: .leading, spacing: 8) {
+                // Her message
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Her:")
+                        .font(.system(size: 10))
+                        .foregroundStyle(AppTheme.textMuted)
+                    Text(conversation.herMessage)
+                        .font(.system(size: 12))
+                        .foregroundStyle(AppTheme.textSecondary)
+                        .padding(10)
+                        .background(AppTheme.cardBackground)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(AppTheme.cardBorder, lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+
+                // Your response
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 4) {
+                        Image(systemName: conversation.tone.icon)
+                            .font(.system(size: 9))
+                        Text("Your \(conversation.tone.displayName.lowercased()) reply:")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundStyle(AppTheme.textMuted)
+
+                    Text(conversation.generatedResponse)
+                        .font(.system(size: 12))
+                        .foregroundStyle(AppTheme.textSecondary)
+                        .padding(10)
+                        .background(AppTheme.violet.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+            }
+            .padding(.bottom, 4)
+        }
+    }
+
+    // MARK: - Input Area
+
+    private var inputArea: some View {
+        VStack(spacing: 12) {
+            // Her message input
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Her message:")
+                    .font(.system(size: 10))
+                    .foregroundStyle(AppTheme.textMuted)
+                TextField("Paste her message here...", text: $herMessage, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 13))
+                    .foregroundStyle(AppTheme.textPrimary)
+                    .lineLimit(1...6)
+                    .padding(12)
+                    .background(AppTheme.cardBackground)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(AppTheme.cardBorder, lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+
+            // Tone picker
+            TonePicker(selectedTone: $selectedTone)
+
+            // User context input
+            TextField("Add real context... (optional)", text: $userContext)
+                .textFieldStyle(.plain)
+                .font(.system(size: 12))
+                .foregroundStyle(AppTheme.textPrimary)
+                .padding(12)
+                .background(AppTheme.cardBackground)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(AppTheme.cardBorder, lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+            // Generate button
+            Button {
+                Task { await generateResponse() }
+            } label: {
+                HStack(spacing: 6) {
+                    if isGenerating {
+                        ProgressView()
+                            .tint(.white)
+                            .scaleEffect(0.8)
+                    } else {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 14))
+                    }
+                    Text(isGenerating ? "Generating..." : "Generate Response")
+                        .font(.system(size: 14, weight: .bold))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background {
+                    if herMessage.isEmpty || isGenerating {
+                        AppTheme.cardBackground
+                    } else {
+                        AppTheme.primaryGradient
+                    }
+                }
+                .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+            .buttonStyle(.plain)
+            .disabled(herMessage.isEmpty || isGenerating)
+        }
+    }
+
+    // MARK: - Response Area
+
+    private var responseArea: some View {
+        ResponseBubble(
+            tone: selectedTone,
+            responseText: currentResponse.isEmpty ? "Thinking..." : currentResponse,
+            isStreaming: isGenerating,
+            onCopy: {
+                UIPasteboard.general.string = currentResponse
+            },
+            onRegenerate: {
+                Task { await generateResponse() }
+            }
+        )
+    }
+
+    // MARK: - Generation
+
+    private func generateResponse() async {
+        let messageText = herMessage.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !messageText.isEmpty else { return }
+
+        isGenerating = true
+        currentResponse = ""
+
+        let profileData = WomanProfileData(
+            name: profile.name,
+            notes: profile.notes,
+            conversationSummary: profile.conversationSummary,
+            exchanges: profile.sortedConversations.map {
+                ContextManager.Exchange(herMessage: $0.herMessage, response: $0.generatedResponse)
+            }
+        )
+
+        let contextText = userContext.isEmpty ? nil : userContext
+
+        do {
+            let finalResponse = try await aiService.generate(
+                profile: profileData,
+                herMessage: messageText,
+                userContext: contextText,
+                tone: selectedTone,
+                onUpdate: { partial in
+                    currentResponse = partial
+                },
+                onSummarizationNeeded: { prompt in
+                    try? await aiService.summarize(prompt: prompt)
+                }
+            )
+
+            // Save the conversation
+            let conversation = Conversation(
+                herMessage: messageText,
+                userContext: contextText,
+                tone: selectedTone,
+                generatedResponse: finalResponse
+            )
+            conversation.womanProfile = profile
+            modelContext.insert(conversation)
+
+            // Clear inputs for next round
+            herMessage = ""
+            userContext = ""
+
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+
+        isGenerating = false
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ChatView(profile: {
+            let p = WomanProfile(name: "Anna", gradientIndex: 0, notes: ["loves hiking", "has a cat named Milo"])
+            return p
+        }())
+    }
+    .modelContainer(for: [WomanProfile.self, Conversation.self], inMemory: true)
 }

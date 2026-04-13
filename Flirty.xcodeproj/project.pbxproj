@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D9B664D7BBC8BC97B6DFCF3 /* ProfileNotesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A13CA16E4A64E77071A909EC /* ProfileNotesView.swift */; };
 		27436C17B7967D41963D2704 /* ContextManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D43D9B9E99C9DA13C1DD96 /* ContextManagerTests.swift */; };
 		3AB84D9A4187A3E53A74C938 /* ResponseBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11EF6741605E481B8DB59FAC /* ResponseBubble.swift */; };
 		3B0A9B6238A30FFFDD5807F7 /* ContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19E349D554A58B34BF9B913 /* ContextManager.swift */; };
@@ -46,6 +47,7 @@
 		6770A6C5A35447F3F97E75D4 /* Tone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tone.swift; sourceTree = "<group>"; };
 		6E85159FE06E41031375F133 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		9134963B9FEBFCF5CF9FC5B8 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		A13CA16E4A64E77071A909EC /* ProfileNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNotesView.swift; sourceTree = "<group>"; };
 		D82CB9217473269ADF816553 /* WomanProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WomanProfile.swift; sourceTree = "<group>"; };
 		DE6E5984DABB1E018AE6C7E6 /* Flirty.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Flirty.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F19E349D554A58B34BF9B913 /* ContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextManager.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 			children = (
 				2F761A36C0B74725D143D79E /* AddWomanView.swift */,
 				07315EE8CC0F59D077600BC1 /* ChatView.swift */,
+				A13CA16E4A64E77071A909EC /* ProfileNotesView.swift */,
 				11EF6741605E481B8DB59FAC /* ResponseBubble.swift */,
 				1D84BE0210AD48C6DFA19D6E /* TonePicker.swift */,
 				1F411AA95D178B68C0A3E216 /* WomenListView.swift */,
@@ -139,7 +142,7 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
-		"TEMP_87EE9B19-5162-4EE8-98C8-6F94C8F1DD4E" /* Resources */ = {
+		"TEMP_8628116A-21E4-42E1-9B88-E7E1ED65F74B" /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -227,6 +230,7 @@
 				3B0A9B6238A30FFFDD5807F7 /* ContextManager.swift in Sources */,
 				F66661F10D890B0EA21B3074 /* Conversation.swift in Sources */,
 				CD3DCA8ECB0C042645D21C70 /* FlirtyApp.swift in Sources */,
+				0D9B664D7BBC8BC97B6DFCF3 /* ProfileNotesView.swift in Sources */,
 				3AB84D9A4187A3E53A74C938 /* ResponseBubble.swift in Sources */,
 				3DFB12A5FFECA99910CFE6D3 /* Tone.swift in Sources */,
 				F641BAE1CFD93507DB1555D8 /* TonePicker.swift in Sources */,

@@ -14,6 +14,7 @@ enum AIAvailability {
     case notReady
 }
 
+@MainActor
 @Observable
 final class AIService {
     private var session: LanguageModelSession?
