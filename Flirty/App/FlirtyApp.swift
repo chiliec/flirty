@@ -5,7 +5,8 @@ import SwiftData
 struct FlirtyApp: App {
     var body: some Scene {
         WindowGroup {
-            Text("Flirty")
+            WomenListView()
+                .preferredColorScheme(.dark)
         }
         .modelContainer(for: [WomanProfile.self, Conversation.self])
     }
