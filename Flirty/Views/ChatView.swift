@@ -228,6 +228,7 @@ struct ChatView: View {
             name: profile.name,
             notes: profile.notes,
             conversationSummary: profile.conversationSummary,
+            summarizedExchangeCount: profile.summarizedExchangeCount,
             exchanges: profile.sortedConversations.map {
                 ContextManager.Exchange(herMessage: $0.herMessage, response: $0.generatedResponse)
             }
@@ -244,8 +245,9 @@ struct ChatView: View {
                 onUpdate: { partial in
                     currentResponse = partial
                 },
-                onSummarizationNeeded: { prompt in
-                    try? await aiService.summarize(prompt: prompt)
+                onSummaryProduced: { summary, summarizedCount in
+                    profile.conversationSummary = summary
+                    profile.summarizedExchangeCount = summarizedCount
                 }
             )
 

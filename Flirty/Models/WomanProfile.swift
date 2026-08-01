@@ -8,6 +8,9 @@ final class WomanProfile {
     var gradientIndex: Int
     var notes: [String]
     var conversationSummary: String?
+    /// How many aged-out exchanges `conversationSummary` already covers, so older
+    /// history is folded in once instead of being re-summarized on every generation.
+    var summarizedExchangeCount: Int = 0
     var createdAt: Date
 
     @Relationship(deleteRule: .cascade, inverse: \Conversation.womanProfile)
@@ -19,6 +22,7 @@ final class WomanProfile {
         self.gradientIndex = gradientIndex
         self.notes = notes
         self.conversationSummary = nil
+        self.summarizedExchangeCount = 0
         self.createdAt = Date()
         self.conversations = []
     }

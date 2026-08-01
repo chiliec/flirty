@@ -120,4 +120,110 @@ struct ContextManagerTests {
         #expect(trimmed.count >= 1)
         #expect(trimmed.last?.herMessage.contains("19") == true)
     }
+
+    // MARK: - Summarization coverage
+
+    private func profile(
+        exchangeCount: Int,
+        summary: String? = nil,
+        summarizedExchangeCount: Int = 0
+    ) -> WomanProfileData {
+        WomanProfileData(
+            name: "Anna",
+            notes: [],
+            conversationSummary: summary,
+            summarizedExchangeCount: summarizedExchangeCount,
+            exchanges: (0..<exchangeCount).map {
+                ContextManager.Exchange(herMessage: "Her message \($0)", response: "Reply \($0)")
+            }
+        )
+    }
+
+    @Test("Skips summarization while every exchange still fits verbatim")
+    func noSummarizationWithinVerbatimWindow() {
+        let manager = ContextManager()
+        let context = manager.prepareContext(
+            profile: profile(exchangeCount: ContextManager.verbatimExchangeCount),
+            herMessage: "Hey",
+            userContext: nil,
+            tone: .sweet
+        )
+
+        #expect(!context.needsSummarization)
+        #expect(context.summarizedThroughCount == 0)
+    }
+
+    @Test("Summarizes exchanges that age out of the verbatim window")
+    func summarizesAgedOutExchanges() {
+        let manager = ContextManager()
+        let context = manager.prepareContext(
+            profile: profile(exchangeCount: 5),
+            herMessage: "Hey",
+            userContext: nil,
+            tone: .sweet
+        )
+
+        // 5 exchanges, last 3 verbatim, so the first 2 age out.
+        #expect(context.needsSummarization)
+        #expect(context.summarizedThroughCount == 2)
+        #expect(context.exchangesToSummarize.count == 2)
+        #expect(context.exchangesToSummarize.first?.herMessage == "Her message 0")
+    }
+
+    @Test("Does not re-summarize exchanges the stored summary already covers")
+    func skipsAlreadySummarizedExchanges() {
+        let manager = ContextManager()
+        let context = manager.prepareContext(
+            profile: profile(exchangeCount: 5, summary: "Earlier chat.", summarizedExchangeCount: 2),
+            herMessage: "Hey",
+            userContext: nil,
+            tone: .sweet
+        )
+
+        // Regression guard: this was an unconditional re-summarization on every generation.
+        #expect(!context.needsSummarization)
+        #expect(context.exchangesToSummarize.isEmpty)
+    }
+
+    @Test("Refreshes the summary when new exchanges age out past it")
+    func refreshesSummaryAsConversationGrows() {
+        let manager = ContextManager()
+        let context = manager.prepareContext(
+            profile: profile(exchangeCount: 7, summary: "Earlier chat.", summarizedExchangeCount: 2),
+            herMessage: "Hey",
+            userContext: nil,
+            tone: .sweet
+        )
+
+        // 7 exchanges → 4 aged out, 2 already covered, so exactly 2 are new.
+        #expect(context.needsSummarization)
+        #expect(context.summarizedThroughCount == 4)
+        #expect(context.exchangesToSummarize.count == 2)
+        #expect(context.exchangesToSummarize.first?.herMessage == "Her message 2")
+    }
+
+    @Test("Folds the previous summary into an incremental summarization prompt")
+    func summarizationPromptCarriesPreviousSummary() {
+        let manager = ContextManager()
+        let prompt = manager.buildSummarizationPrompt(
+            previousSummary: "You discussed travel plans.",
+            exchanges: [ContextManager.Exchange(herMessage: "Booked it!", response: "Amazing!")]
+        )
+
+        #expect(prompt.contains("You discussed travel plans."))
+        #expect(prompt.contains("Booked it!"))
+    }
+
+    @Test("Includes the stored summary in the generation prompt")
+    func preparedPromptIncludesStoredSummary() {
+        let manager = ContextManager()
+        let context = manager.prepareContext(
+            profile: profile(exchangeCount: 5, summary: "Earlier chat about hiking.", summarizedExchangeCount: 2),
+            herMessage: "Hey",
+            userContext: nil,
+            tone: .sweet
+        )
+
+        #expect(context.prompt.contains("Earlier chat about hiking."))
+    }
 }

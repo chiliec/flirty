@@ -7,9 +7,14 @@ struct ContextManager {
         let response: String
     }
 
+    /// The most recent exchanges are always sent verbatim; older ones get summarized.
+    static let verbatimExchangeCount = 3
+
     private let maxTotalTokens = 4096
     private let outputBudget = 600
     private let safetyMargin = 200
+    private let recentExchangeBudget = 400
+    private let summarizationInputBudget = 1200
     private var inputBudget: Int { maxTotalTokens - outputBudget - safetyMargin }
 
     func buildPrompt(
@@ -112,8 +117,16 @@ struct ContextManager {
         return result
     }
 
-    func buildSummarizationPrompt(exchanges: [Exchange]) -> String {
+    /// Builds an incremental summarization prompt: the summary produced so far plus
+    /// only the exchanges that have aged out since it was written.
+    func buildSummarizationPrompt(previousSummary: String?, exchanges: [Exchange]) -> String {
         var lines = "Summarize this conversation history in 2-3 sentences. Focus on: topics discussed, plans made, emotional tone, and personal details shared.\n\n"
+
+        if let previousSummary, !previousSummary.isEmpty {
+            lines += "Summary of the conversation so far:\n\(previousSummary)\n\n"
+            lines += "Fold these newer messages into that summary:\n\n"
+        }
+
         for exchange in exchanges {
             lines += "Her: \(exchange.herMessage)\n"
             lines += "He replied: \(exchange.response)\n\n"
@@ -139,20 +152,39 @@ struct ContextManager {
         """
     }
 
+    struct PreparedContext {
+        let prompt: String
+        let needsSummarization: Bool
+        /// Only the exchanges that aged out since the stored summary was written.
+        let exchangesToSummarize: [Exchange]
+        /// Total aged-out exchanges a new summary would cover; persist alongside it.
+        let summarizedThroughCount: Int
+    }
+
     func prepareContext(
         profile: WomanProfileData,
         herMessage: String,
         userContext: String?,
         tone: Tone
-    ) -> (prompt: String, needsSummarization: Bool, exchangesToSummarize: [Exchange]) {
+    ) -> PreparedContext {
         let allExchanges = profile.exchanges
-        var recentExchanges = Array(allExchanges.suffix(3))
-        let olderExchanges = allExchanges.count > 3 ? Array(allExchanges.dropLast(3)) : []
+        let olderExchanges = allExchanges.count > Self.verbatimExchangeCount
+            ? Array(allExchanges.dropLast(Self.verbatimExchangeCount))
+            : []
 
-        let shouldSummarize = !olderExchanges.isEmpty && profile.conversationSummary == nil
+        // Exchanges already folded into the stored summary stay folded in — only the
+        // ones that aged out since then need another summarization pass. Without this
+        // the summary would be rebuilt from scratch (or never refreshed) every time.
+        let alreadySummarized = min(max(profile.summarizedExchangeCount, 0), olderExchanges.count)
+        let newlyAged = trimExchanges(
+            Array(olderExchanges.dropFirst(alreadySummarized)),
+            maxTokens: summarizationInputBudget
+        )
 
-        // Trim recent exchanges if still over budget
-        recentExchanges = trimExchanges(recentExchanges, maxTokens: 400)
+        let recentExchanges = trimExchanges(
+            Array(allExchanges.suffix(Self.verbatimExchangeCount)),
+            maxTokens: recentExchangeBudget
+        )
 
         let prompt = buildPrompt(
             name: profile.name,
@@ -164,7 +196,12 @@ struct ContextManager {
             conversationSummary: profile.conversationSummary
         )
 
-        return (prompt, shouldSummarize, olderExchanges)
+        return PreparedContext(
+            prompt: prompt,
+            needsSummarization: !newlyAged.isEmpty,
+            exchangesToSummarize: newlyAged,
+            summarizedThroughCount: olderExchanges.count
+        )
     }
 }
 
@@ -173,5 +210,21 @@ struct WomanProfileData {
     let name: String
     let notes: [String]
     let conversationSummary: String?
+    /// How many aged-out exchanges `conversationSummary` already covers.
+    let summarizedExchangeCount: Int
     let exchanges: [ContextManager.Exchange]
+
+    init(
+        name: String,
+        notes: [String],
+        conversationSummary: String?,
+        summarizedExchangeCount: Int = 0,
+        exchanges: [ContextManager.Exchange]
+    ) {
+        self.name = name
+        self.notes = notes
+        self.conversationSummary = conversationSummary
+        self.summarizedExchangeCount = summarizedExchangeCount
+        self.exchanges = exchanges
+    }
 }

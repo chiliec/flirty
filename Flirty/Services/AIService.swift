@@ -49,14 +49,14 @@ final class AIService {
         userContext: String?,
         tone: Tone,
         onUpdate: @escaping @MainActor (String) -> Void,
-        onSummarizationNeeded: ((String) async -> String?)? = nil
+        onSummaryProduced: (@MainActor (String, Int) -> Void)? = nil
     ) async throws -> String {
         isGenerating = true
         defer { isGenerating = false }
 
         var profileData = profile
 
-        // Check if summarization is needed
+        // Fold any newly aged-out exchanges into the stored summary before prompting.
         let context = contextManager.prepareContext(
             profile: profileData,
             herMessage: herMessage,
@@ -64,17 +64,21 @@ final class AIService {
             tone: tone
         )
 
-        if context.needsSummarization, let summarize = onSummarizationNeeded {
+        if context.needsSummarization {
             let summarizationPrompt = contextManager.buildSummarizationPrompt(
+                previousSummary: profileData.conversationSummary,
                 exchanges: context.exchangesToSummarize
             )
-            if let summary = await summarize(summarizationPrompt) {
+            // A failed summarization is not fatal — fall back to the previous summary.
+            if let summary = try? await summarize(prompt: summarizationPrompt) {
                 profileData = WomanProfileData(
                     name: profileData.name,
                     notes: profileData.notes,
                     conversationSummary: summary,
+                    summarizedExchangeCount: context.summarizedThroughCount,
                     exchanges: profileData.exchanges
                 )
+                onSummaryProduced?(summary, context.summarizedThroughCount)
             }
         }
 
