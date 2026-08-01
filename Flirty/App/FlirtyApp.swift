@@ -25,6 +25,7 @@ struct RootView: View {
     let aiService: AIService
     @Environment(\.scenePhase) private var scenePhase
     @State private var availability: AIAvailability?
+    @State private var diagnostic: String?
 
     var body: some View {
         Group {
@@ -37,22 +38,30 @@ struct RootView: View {
                         icon: "brain",
                         title: "Apple Intelligence Required",
                         message: "Enable Apple Intelligence in Settings → Apple Intelligence & Siri to use Flirty.",
+                        showSettings: true,
                         showRetry: true,
-                        onRetry: checkAvailability
+                        onRetry: checkAvailability,
+                        diagnostic: diagnostic
                     )
                 case .notEligible:
                     UnavailableView(
                         icon: "iphone.slash",
                         title: "Device Not Supported",
-                        message: "Flirty requires an iPhone that supports Apple Intelligence."
+                        message: "Flirty requires an iPhone that supports Apple Intelligence.",
+                        diagnostic: diagnostic
                     )
                 case .notReady:
+                    // iOS reports this reason both while the model downloads *and* while
+                    // Apple Intelligence is simply switched off, so the copy has to cover
+                    // both — claiming "downloading" alone leaves the user with nothing to do.
                     UnavailableView(
                         icon: "arrow.down.circle",
-                        title: "AI Model Downloading",
-                        message: "The AI model is still downloading. Please try again shortly.",
+                        title: "AI Model Not Ready",
+                        message: "Turn on Apple Intelligence in Settings → Apple Intelligence & Siri, then wait for the model to finish downloading.",
+                        showSettings: true,
                         showRetry: true,
-                        onRetry: checkAvailability
+                        onRetry: checkAvailability,
+                        diagnostic: diagnostic
                     )
                 }
             } else {
@@ -78,6 +87,7 @@ struct RootView: View {
             availability = .available
         } else {
             availability = aiService.checkAvailability()
+            diagnostic = aiService.availabilityDiagnostic
         }
     }
 }
@@ -86,8 +96,12 @@ struct UnavailableView: View {
     let icon: String
     let title: String
     let message: String
+    var showSettings = false
     var showRetry = false
     var onRetry: (() -> Void)?
+    var diagnostic: String?
+
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         ZStack {
@@ -108,8 +122,12 @@ struct UnavailableView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 40)
 
-                if showRetry, let onRetry {
-                    Button("Try Again") { onRetry() }
+                // `openSettingsURLString` is the only App-Store-safe entry point into
+                // Settings; it cannot target the Apple Intelligence pane (the `App-prefs:`
+                // deep links that could are private API and a 2.5.1 rejection). So the
+                // button gets the user into Settings and `message` covers the last hop.
+                if showSettings, let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    Button("Open Settings") { openURL(settingsURL) }
                         .font(.system(size: 14, weight: .semibold))
                         .padding(.horizontal, 24)
                         .padding(.vertical, 10)
@@ -117,6 +135,20 @@ struct UnavailableView: View {
                         .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+
+                if showRetry, let onRetry {
+                    Button("Try Again") { onRetry() }
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(AppTheme.violet)
+                }
+
+                #if DEBUG
+                if let diagnostic {
+                    Text(diagnostic)
+                        .font(.system(size: 11, design: .monospaced))
+                        .foregroundStyle(AppTheme.textSecondary.opacity(0.6))
+                }
+                #endif
             }
         }
     }

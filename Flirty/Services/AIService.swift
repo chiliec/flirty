@@ -22,8 +22,15 @@ final class AIService {
 
     var isGenerating = false
 
+    /// The three unavailable reasons are documented as distinct, but they are not in
+    /// practice: on a device with Apple Intelligence switched *off* in Settings, iOS can
+    /// still report `.modelNotReady` rather than `.appleIntelligenceNotEnabled`. Callers
+    /// must therefore treat `.notReady` as "off or downloading", not "downloading".
     func checkAvailability() -> AIAvailability {
         let model = SystemLanguageModel.default
+        #if DEBUG
+        print("[Flirty] availability: \(availabilityDiagnostic)")
+        #endif
         switch model.availability {
         case .available:
             return .available
@@ -35,6 +42,19 @@ final class AIService {
             return .notReady
         @unknown default:
             return .notEligible
+        }
+    }
+
+    /// Raw framework value, for on-device debugging. Availability bugs cannot be
+    /// reproduced on simulator, so the gate surfaces this string in DEBUG builds.
+    var availabilityDiagnostic: String {
+        switch SystemLanguageModel.default.availability {
+        case .available:
+            "available"
+        case .unavailable(let reason):
+            "unavailable(\(reason))"
+        @unknown default:
+            "unrecognized availability value"
         }
     }
 
