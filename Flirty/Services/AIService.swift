@@ -97,21 +97,59 @@ final class AIService {
         }
 
         // Stream the response
-        let stream = session.streamResponse(to: finalContext.prompt, generating: FlirtyResponse.self)
+        do {
+            let stream = session.streamResponse(to: finalContext.prompt, generating: FlirtyResponse.self)
 
-        var finalMessage = ""
-        for try await partial in stream {
-            if let message = partial.content.message {
-                finalMessage = message
-                await onUpdate(message)
+            var finalMessage = ""
+            for try await partial in stream {
+                if let message = partial.content.message {
+                    finalMessage = message
+                    await onUpdate(message)
+                }
             }
-        }
 
-        if finalMessage.isEmpty {
-            throw AIServiceError.generationFailed("Empty response from model")
-        }
+            if finalMessage.isEmpty {
+                throw AIServiceError.generationFailed("Empty response from model")
+            }
 
-        return finalMessage
+            return finalMessage
+        } catch let error as LanguageModelSession.GenerationError {
+            throw Self.mapGenerationError(error)
+        } catch let error as AIServiceError {
+            throw error
+        } catch {
+            // Catch model catalog / asset errors that aren't typed as GenerationError
+            let description = error.localizedDescription
+            if description.contains("modelcatalog") || description.contains("UnifiedAssetFramework") {
+                throw AIServiceError.modelNotDownloaded
+            }
+            throw AIServiceError.generationFailed(description)
+        }
+    }
+
+    private static func mapGenerationError(_ error: LanguageModelSession.GenerationError) -> AIServiceError {
+        switch error {
+        case .guardrailViolation:
+            return .guardrailBlocked
+        case .assetsUnavailable:
+            return .modelNotDownloaded
+        case .exceededContextWindowSize:
+            return .generationFailed("The conversation is too long. Try clearing some history.")
+        case .rateLimited:
+            return .generationFailed("Too many requests. Please wait a moment and try again.")
+        case .concurrentRequests:
+            return .generationFailed("Another request is in progress. Please wait for it to finish.")
+        case .unsupportedLanguageOrLocale:
+            return .generationFailed("Your current language or region isn't supported by the AI model.")
+        case .unsupportedGuide:
+            return .generationFailed("Response format error. Please try again.")
+        case .decodingFailure:
+            return .generationFailed("Failed to parse the AI response. Please try again.")
+        case .refusal:
+            return .generationFailed("The AI declined to generate a response. Try rephrasing or changing the tone.")
+        @unknown default:
+            return .generationFailed(error.localizedDescription)
+        }
     }
 
     func summarize(prompt: String) async throws -> String {
@@ -124,6 +162,8 @@ final class AIService {
 enum AIServiceError: LocalizedError {
     case sessionNotAvailable
     case generationFailed(String)
+    case modelNotDownloaded
+    case guardrailBlocked
 
     var errorDescription: String? {
         switch self {
@@ -131,6 +171,10 @@ enum AIServiceError: LocalizedError {
             "AI model session is not available."
         case .generationFailed(let reason):
             "Failed to generate response: \(reason)"
+        case .modelNotDownloaded:
+            "The AI model is still downloading. Go to Settings → Apple Intelligence & Siri and make sure the download is complete, then try again."
+        case .guardrailBlocked:
+            "Apple's content policy prevented generating this response. Try a different tone or rephrase the context."
         }
     }
 }
