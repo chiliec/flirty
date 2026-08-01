@@ -13,6 +13,7 @@
 		3B0A9B6238A30FFFDD5807F7 /* ContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19E349D554A58B34BF9B913 /* ContextManager.swift */; };
 		3DFB12A5FFECA99910CFE6D3 /* Tone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6770A6C5A35447F3F97E75D4 /* Tone.swift */; };
 		41114367E45ABDE1F72A6378 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07315EE8CC0F59D077600BC1 /* ChatView.swift */; };
+		5A3D0EE314B5BDDF95BB9390 /* DeviceAIGenerationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B0CED5807414E51694E45F7 /* DeviceAIGenerationTests.swift */; };
 		752F8687CEFE207EA1210C1F /* FlirtyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC9545D55AE66F66D19E4F77 /* FlirtyUITests.swift */; };
 		7A6F2E39229A923A744D210D /* WomanProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = D82CB9217473269ADF816553 /* WomanProfile.swift */; };
 		7FA89F2DCFDC5730E84DC84D /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9134963B9FEBFCF5CF9FC5B8 /* AppTheme.swift */; };
@@ -55,6 +56,7 @@
 		63E0308F32460508FAF10EA1 /* FlirtyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyApp.swift; sourceTree = "<group>"; };
 		6770A6C5A35447F3F97E75D4 /* Tone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tone.swift; sourceTree = "<group>"; };
 		6E85159FE06E41031375F133 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
+		8B0CED5807414E51694E45F7 /* DeviceAIGenerationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAIGenerationTests.swift; sourceTree = "<group>"; };
 		9134963B9FEBFCF5CF9FC5B8 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		A13CA16E4A64E77071A909EC /* ProfileNotesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileNotesView.swift; sourceTree = "<group>"; };
 		CC9545D55AE66F66D19E4F77 /* FlirtyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlirtyUITests.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 		7E38C16EAE3629DDBBA9DD1F /* FlirtyUITests */ = {
 			isa = PBXGroup;
 			children = (
+				8B0CED5807414E51694E45F7 /* DeviceAIGenerationTests.swift */,
 				CC9545D55AE66F66D19E4F77 /* FlirtyUITests.swift */,
 			);
 			path = FlirtyUITests;
@@ -162,7 +165,7 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
-		"TEMP_586252D2-F9A1-4712-B063-F4720C2040B1" /* Resources */ = {
+		"TEMP_5DBE6CF4-18AD-4B7F-8C98-17A4E60B3A3F" /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -234,11 +237,17 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
+					2369DBF1B34F21C35E55D3AF = {
+						DevelopmentTeam = 7JF6XQC536;
+						ProvisioningStyle = Automatic;
+					};
 					5F7E04370C16A043F3ED4A6D = {
 						DevelopmentTeam = 7JF6XQC536;
 						ProvisioningStyle = Automatic;
 					};
 					E433E3AB21C77CDB619D5746 = {
+						DevelopmentTeam = 7JF6XQC536;
+						ProvisioningStyle = Automatic;
 						TestTargetID = 5F7E04370C16A043F3ED4A6D;
 					};
 				};
@@ -289,6 +298,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A3D0EE314B5BDDF95BB9390 /* DeviceAIGenerationTests.swift in Sources */,
 				752F8687CEFE207EA1210C1F /* FlirtyUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -441,8 +451,10 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 7JF6XQC536;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -505,8 +517,10 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 7JF6XQC536;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;

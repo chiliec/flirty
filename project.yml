@@ -8,6 +8,10 @@ settings:
   base:
     SWIFT_VERSION: "6.2"
     GENERATE_INFOPLIST_FILE: YES
+    # Project-wide: the test bundles need signing too when running on a device,
+    # not just the app.
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: 7JF6XQC536
 targets:
   Flirty:
     type: application
@@ -43,3 +47,24 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flirty.uitests
+# Declared here because `xcodegen generate` rewrites the project and deletes any
+# scheme it does not know about. The shared Flirty.xcscheme used to be committed by
+# hand, so regenerating silently broke every xcodebuild command in CLAUDE.md.
+schemes:
+  Flirty:
+    build:
+      targets:
+        Flirty: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - FlirtyTests
+        - FlirtyUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

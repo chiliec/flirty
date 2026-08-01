@@ -26,6 +26,7 @@ struct ResponseBubble: View {
                 .foregroundStyle(AppTheme.textPrimary)
                 .lineSpacing(4)
                 .textSelection(.enabled)
+                .accessibilityIdentifier("responseText")
 
             // Action buttons
             if !isStreaming {

@@ -210,7 +210,7 @@ struct ChatView: View {
                 UIPasteboard.general.string = currentResponse
             },
             onRegenerate: {
-                Task { await generateResponse() }
+                Task { await regenerateLastResponse() }
             }
         )
     }
@@ -264,6 +264,59 @@ struct ChatView: View {
             // Clear inputs for next round
             herMessage = ""
             userContext = ""
+
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+
+        isGenerating = false
+    }
+
+    /// Regeneration cannot route through `generateResponse()`: that reads `herMessage`,
+    /// which is cleared on success, so the button did nothing at all once a response had
+    /// landed — and had the guard passed it would have inserted a *second* `Conversation`
+    /// for the same message instead of replacing the reply. Replay the last exchange and
+    /// overwrite its response in place, which is what the button promises.
+    private func regenerateLastResponse() async {
+        guard let target = profile.sortedConversations.last else { return }
+
+        isGenerating = true
+        currentResponse = ""
+
+        // Drop the exchange being replaced from the history, or the model is primed with
+        // the very answer it is meant to reconsider.
+        let history = profile.sortedConversations
+            .filter { $0.id != target.id }
+            .map { ContextManager.Exchange(herMessage: $0.herMessage, response: $0.generatedResponse) }
+
+        let profileData = WomanProfileData(
+            name: profile.name,
+            notes: profile.notes,
+            conversationSummary: profile.conversationSummary,
+            summarizedExchangeCount: profile.summarizedExchangeCount,
+            exchanges: history
+        )
+
+        do {
+            let finalResponse = try await aiService.generate(
+                profile: profileData,
+                herMessage: target.herMessage,
+                userContext: target.userContext,
+                tone: selectedTone,
+                onUpdate: { partial in
+                    currentResponse = partial
+                },
+                onSummaryProduced: { summary, summarizedCount in
+                    profile.conversationSummary = summary
+                    profile.summarizedExchangeCount = summarizedCount
+                }
+            )
+
+            // Regenerate honours the tone picker as it stands now, so a user can retry the
+            // same message in a different tone. Keep the stored tone in step with the text.
+            target.generatedResponse = finalResponse
+            target.toneRawValue = selectedTone.rawValue
 
         } catch {
             errorMessage = error.localizedDescription
