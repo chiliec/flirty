@@ -2077,8 +2077,9 @@ the plain guardrail message, with no "Failed to generate response:" prefix.
 
 ## Open design question
 
-`ContextManager.needsSummarization` — the 4096-token budget check — has no
-production caller. Summarization triggers purely on the 3-exchange verbatim
-window, so nothing consults the token budget at prompt-assembly time. Either
-wire it in as a guard or delete it; leaving it dead invites the assumption that
-the budget is enforced when it isn't.
+Resolved 2026-08-01 (`5c4230e`): deleted `ContextManager.needsSummarization`
+(the 4096-token budget check) along with its now-unused supporting constants.
+It had no production caller — summarization is triggered purely by the
+aged-exchange-count tracking (`summarizedExchangeCount`) added in `b16c76e`,
+and prompt size is bounded by the fixed `recentExchangeBudget` /
+`summarizationInputBudget` trims, well under the 4096 total.
