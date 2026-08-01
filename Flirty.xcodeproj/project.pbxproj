@@ -162,7 +162,7 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
-		"TEMP_E4C55D7B-A46A-4FFB-9CE8-DC75C2607BD5" /* Resources */ = {
+		"TEMP_586252D2-F9A1-4712-B063-F4720C2040B1" /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -234,6 +234,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
+					5F7E04370C16A043F3ED4A6D = {
+						DevelopmentTeam = 7JF6XQC536;
+						ProvisioningStyle = Automatic;
+					};
 					E433E3AB21C77CDB619D5746 = {
 						TestTargetID = 5F7E04370C16A043F3ED4A6D;
 					};
@@ -335,6 +339,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7JF6XQC536;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -354,6 +360,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7JF6XQC536;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

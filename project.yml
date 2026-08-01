@@ -21,6 +21,8 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
         PRODUCT_BUNDLE_IDENTIFIER: com.flirty.app
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 7JF6XQC536
   FlirtyTests:
     type: bundle.unit-test
     platform: iOS
