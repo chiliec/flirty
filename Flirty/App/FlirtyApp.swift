@@ -80,6 +80,18 @@ struct RootView: View {
             // Settings" screen is a dead end that outlives the condition it describes.
             if phase == .active { checkAvailability() }
         }
+        .task(id: availability) {
+            // A finishing download is the one transition that happens with no user action
+            // and no scene change, so it is the only one the observers above cannot catch —
+            // poll for it. The other states need a trip to Settings, which always comes
+            // back through `scenePhase`. `.notEligible` is permanent; never poll it.
+            guard availability == .notReady else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(15))
+                guard !Task.isCancelled else { return }
+                checkAvailability()
+            }
+        }
     }
 
     private func checkAvailability() {

@@ -7,7 +7,7 @@ struct FlirtyResponse {
     var message: String
 }
 
-enum AIAvailability {
+enum AIAvailability: Equatable, Sendable {
     case available
     case notEnabled
     case notEligible
