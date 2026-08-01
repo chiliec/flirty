@@ -1,54 +1,34 @@
-# CLAUDE.md
+# Flirty
+iOS 26+ SwiftUI app. Generates romantic chat responses via Apple on-device Foundation Models (~3B parameter, 4096 token combined limit). No cloud, no API keys.
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Build & Test Commands
-
-This project uses **xcodegen** to manage the Xcode project. After adding or removing Swift files, regenerate the project:
-
+## Commands
 ```bash
 xcodegen generate
-```
-
-Build:
-```bash
-xcodebuild -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
-```
-
-Run unit tests:
-```bash
-xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:FlirtyTests
-```
-
-Run UI tests:
-```bash
-xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:FlirtyUITests
-```
-
-Run a single test:
-```bash
-xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:FlirtyTests/ContextManagerTests/testName
+xcodebuild -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' build
+xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' -only-testing:FlirtyTests
+xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' -only-testing:FlirtyUITests
+xcodebuild test ... -only-testing:FlirtyTests/ContextManagerTests/testName
 ```
 
 ## Architecture
+`WomanProfile` + `Tone` → `ContextManager` (pure Swift struct, no framework deps, owns all prompt assembly + token budget) → `AIService` (streams response) → `Conversation` saved.
 
-**Flirty** is an iOS 26+ SwiftUI app that generates romantic chat responses using Apple's on-device Foundation Models (~3B parameter model, 4096 token combined limit). All AI runs locally — no cloud, no API keys.
+`ContextManager` uses `WomanProfileData` (lightweight snapshot) to avoid importing SwiftData.
 
-### Data Flow
+## Critical Gotchas
+- **`AIService` is `@MainActor @Observable`** — required by Swift 6.2 strict concurrency (SwiftUI views capture it across actor boundaries)
+- **`Tone` stored as `toneRawValue: String`** in SwiftData `Conversation` — SwiftData doesn't support custom enum storage. Computed `tone` property converts.
+- **4096 token limit**: last 2-3 exchanges verbatim + summarize older via separate `LanguageModelSession` call + store summary on `WomanProfile.conversationSummary`
+- **`--ui-testing` launch arg**: bypasses `SystemLanguageModel.default.availability` check, uses in-memory SwiftData for test isolation
 
-User creates a **WomanProfile** (name, notes) → pastes her message → selects a **Tone** → optionally adds real-life context → **ContextManager** assembles a token-budget-aware prompt → **AIService** streams a response via `LanguageModelSession` → response saved as a **Conversation**.
+## Foundation Models API
+```swift
+// Session init: trailing closure with @InstructionsBuilder
+LanguageModelSession { "instructions string" }
 
-### Key Design Decisions
+// Streaming: returns snapshots — access fields as optional
+session.streamResponse(to:generating:)  // partial.content.fieldName is Optional
 
-- **ContextManager** is a pure Swift struct (no framework dependencies) that owns all prompt assembly and token budget logic. It's the most testable part of the codebase. It uses `WomanProfileData` (a lightweight snapshot) to avoid importing SwiftData.
-- **AIService** is `@MainActor @Observable` — required by Swift 6.2 strict concurrency because SwiftUI views capture it across actor boundaries. It wraps `LanguageModelSession` and handles streaming via `@Generable` structs.
-- **Tone** is stored as `toneRawValue: String` in SwiftData's `Conversation` model (not the enum directly) because SwiftData doesn't support custom enum storage. A computed `tone` property converts between the two.
-- **4096 token limit** is managed by keeping last 2-3 exchanges verbatim, summarizing older ones via a separate `LanguageModelSession` call, and storing the summary on `WomanProfile.conversationSummary`.
-- **FlirtyApp** checks `SystemLanguageModel.default.availability` on launch and gates the UI behind it. The `--ui-testing` launch argument bypasses this check and uses in-memory SwiftData for test isolation.
-
-### Foundation Models API Notes
-
-- Session init: `LanguageModelSession { "instructions string" }` (trailing closure with `@InstructionsBuilder`)
-- Streaming returns snapshots via `session.streamResponse(to:generating:)` — access fields as `partial.content.fieldName` (optional)
-- `session.prewarm()` is synchronous (not async) — call on view appear
-- Apple's content guardrails are mandatory and cannot be disabled
+session.prewarm()  // synchronous, NOT async — call on view appear
+```
+Apple content guardrails are mandatory and cannot be disabled.
