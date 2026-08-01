@@ -37,7 +37,7 @@ struct RootView: View {
                     UnavailableView(
                         icon: "brain",
                         title: "Apple Intelligence Required",
-                        message: "Enable Apple Intelligence in Settings → Apple Intelligence & Siri to use Flirty.",
+                        message: "Flirty needs Apple Intelligence. Tap below, then go back to Settings › Apple Intelligence & Siri to turn it on.",
                         showSettings: true,
                         showRetry: true,
                         onRetry: checkAvailability,
@@ -57,7 +57,7 @@ struct RootView: View {
                     UnavailableView(
                         icon: "arrow.down.circle",
                         title: "AI Model Not Ready",
-                        message: "Turn on Apple Intelligence in Settings → Apple Intelligence & Siri, then wait for the model to finish downloading.",
+                        message: "Turn on Apple Intelligence to use Flirty. Tap below, then go back to Settings › Apple Intelligence & Siri. If it's already on, the model is still downloading.",
                         showSettings: true,
                         showRetry: true,
                         onRetry: checkAvailability,
@@ -124,8 +124,10 @@ struct UnavailableView: View {
 
                 // `openSettingsURLString` is the only App-Store-safe entry point into
                 // Settings; it cannot target the Apple Intelligence pane (the `App-prefs:`
-                // deep links that could are private API and a 2.5.1 rejection). So the
-                // button gets the user into Settings and `message` covers the last hop.
+                // deep links that could are private API and a 2.5.1 rejection, and there is
+                // no public system UI for the opt-in). Verified on device: this lands on
+                // Flirty's *own* pane, which has no Apple Intelligence toggle — so `message`
+                // must tell the user to back out to the Settings root from there.
                 if showSettings, let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                     Button("Open Settings") { openURL(settingsURL) }
                         .font(.system(size: 14, weight: .semibold))
