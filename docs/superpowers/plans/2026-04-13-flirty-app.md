@@ -2033,3 +2033,52 @@ If any bugs were found and fixed during testing:
 git add -A
 git commit -m "fix: address issues found during manual testing"
 ```
+
+---
+
+### Task 13: Verify post-MVP bug fixes on device
+
+Added 2026-08-01. Steps 2, 3, 4 and 6 of Task 12 are now covered by the
+automated UI suite (`-only-testing:FlirtyUITests`, 10 tests). The items below
+are the ones that cannot be checked on the simulator: it has no Apple
+Intelligence, and `--ui-testing` forces availability to `.available`.
+
+- [ ] **Step 1: Verify conversation summarization end-to-end** (fixes `b16c76e`)
+
+Summaries were previously generated and thrown away — `conversationSummary`
+was never written, so the model never saw history past the last 3 exchanges.
+
+1. Hold a conversation of 5+ exchanges with one profile
+2. Confirm `WomanProfile.conversationSummary` is non-nil after exchange 4
+3. Confirm `summarizedExchangeCount` advances as older exchanges age out,
+   and that summarization does **not** re-run when nothing new has aged out
+4. Confirm the generated reply reflects context from summarized-away messages
+
+- [ ] **Step 2: Verify the SwiftData migration**
+
+`summarizedExchangeCount` was added to `WomanProfile` in `b16c76e`. Install
+over a build that predates it and confirm existing profiles load. If the store
+fails to open, delete and reinstall — acceptable pre-release, but worth knowing.
+
+- [ ] **Step 3: Verify the availability gate recovers** (fixes `68d1e46`)
+
+1. Disable Apple Intelligence in Settings, launch Flirty → "Apple Intelligence Required"
+2. Tap Try Again → screen stays (still disabled)
+3. Enable Apple Intelligence in Settings, return to Flirty **without force-quitting**
+4. Confirm the app moves to the main list on its own via the `scenePhase` re-check
+
+- [ ] **Step 4: Verify generation error messages**
+
+`222ea93` maps every `GenerationError` case to user-facing text. Guardrail
+violations are the easiest to trigger deliberately — confirm the alert reads as
+the plain guardrail message, with no "Failed to generate response:" prefix.
+
+---
+
+## Open design question
+
+`ContextManager.needsSummarization` — the 4096-token budget check — has no
+production caller. Summarization triggers purely on the 3-exchange verbatim
+window, so nothing consults the token budget at prompt-assembly time. Either
+wire it in as a guard or delete it; leaving it dead invites the assumption that
+the budget is enforced when it isn't.

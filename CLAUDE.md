@@ -20,6 +20,7 @@ xcodebuild test ... -only-testing:FlirtyTests/ContextManagerTests/testName
 - **`Tone` stored as `toneRawValue: String`** in SwiftData `Conversation` — SwiftData doesn't support custom enum storage. Computed `tone` property converts.
 - **4096 token limit**: last 2-3 exchanges verbatim + summarize older via separate `LanguageModelSession` call + store summary on `WomanProfile.conversationSummary`
 - **`--ui-testing` launch arg**: bypasses `SystemLanguageModel.default.availability` check, uses in-memory SwiftData for test isolation
+- **No AI verification on simulator**: there is no Apple Intelligence in the simulator, and `--ui-testing` forces `.available`. Any change touching generation, summarization, or the availability gate is unverified until run on a device — see Task 13 in `docs/superpowers/plans/2026-04-13-flirty-app.md`
 
 ## Foundation Models API
 ```swift
