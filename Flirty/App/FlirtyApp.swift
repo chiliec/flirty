@@ -23,6 +23,7 @@ struct FlirtyApp: App {
 
 struct RootView: View {
     let aiService: AIService
+    @Environment(\.scenePhase) private var scenePhase
     @State private var availability: AIAvailability?
 
     var body: some View {
@@ -35,7 +36,9 @@ struct RootView: View {
                     UnavailableView(
                         icon: "brain",
                         title: "Apple Intelligence Required",
-                        message: "Enable Apple Intelligence in Settings → Apple Intelligence & Siri to use Flirty."
+                        message: "Enable Apple Intelligence in Settings → Apple Intelligence & Siri to use Flirty.",
+                        showRetry: true,
+                        onRetry: checkAvailability
                     )
                 case .notEligible:
                     UnavailableView(
@@ -61,6 +64,13 @@ struct RootView: View {
             }
         }
         .onAppear { checkAvailability() }
+        .onChange(of: scenePhase) { _, phase in
+            // Availability is not fixed for the life of the process: the user may have
+            // just switched Apple Intelligence on in Settings, or the model download may
+            // have finished, while we were backgrounded. Without this the "enable it in
+            // Settings" screen is a dead end that outlives the condition it describes.
+            if phase == .active { checkAvailability() }
+        }
     }
 
     private func checkAvailability() {
