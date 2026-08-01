@@ -10,12 +10,8 @@ struct ContextManager {
     /// The most recent exchanges are always sent verbatim; older ones get summarized.
     static let verbatimExchangeCount = 3
 
-    private let maxTotalTokens = 4096
-    private let outputBudget = 600
-    private let safetyMargin = 200
     private let recentExchangeBudget = 400
     private let summarizationInputBudget = 1200
-    private var inputBudget: Int { maxTotalTokens - outputBudget - safetyMargin }
 
     func buildPrompt(
         name: String,
@@ -80,25 +76,6 @@ struct ContextManager {
     func estimateTokens(_ text: String) -> Int {
         let words = text.split(separator: " ").count
         return max(1, Int(Double(words) * 1.3))
-    }
-
-    func needsSummarization(
-        notes: [String],
-        recentExchanges: [Exchange],
-        conversationSummary: String?,
-        herMessage: String,
-        userContext: String?
-    ) -> Bool {
-        let prompt = buildPrompt(
-            name: "X",
-            notes: notes,
-            tone: .sweet,
-            herMessage: herMessage,
-            userContext: userContext,
-            recentExchanges: recentExchanges,
-            conversationSummary: conversationSummary
-        )
-        return estimateTokens(prompt) > inputBudget
     }
 
     func trimExchanges(_ exchanges: [Exchange], maxTokens: Int) -> [Exchange] {

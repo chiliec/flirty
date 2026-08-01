@@ -90,21 +90,6 @@ struct ContextManagerTests {
         #expect(estimate <= 12)
     }
 
-    @Test("Determines when summarization is needed")
-    func summarizationNeeded() {
-        let manager = ContextManager()
-
-        #expect(!manager.needsSummarization(
-            notes: ["short note"],
-            recentExchanges: [
-                ContextManager.Exchange(herMessage: "Hi", response: "Hello!")
-            ],
-            conversationSummary: nil,
-            herMessage: "Hey",
-            userContext: nil
-        ))
-    }
-
     @Test("Trims exchanges when over budget")
     func trimsExchangesWhenOverBudget() {
         let manager = ContextManager()
