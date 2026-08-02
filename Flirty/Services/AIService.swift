@@ -17,7 +17,6 @@ enum AIAvailability: Equatable, Sendable {
 @MainActor
 @Observable
 final class AIService {
-    private var session: LanguageModelSession?
     private let contextManager = ContextManager()
 
     var isGenerating = false
@@ -59,8 +58,10 @@ final class AIService {
     }
 
     func prewarm() {
-        session = LanguageModelSession()
-        session?.prewarm()
+        // Warms the underlying model assets. `generate` builds its own instructions-bound
+        // session per call, so nothing is stored here — the warm-up persists at the model
+        // level regardless of which session ultimately runs the request.
+        LanguageModelSession().prewarm()
     }
 
     func generate(
@@ -112,12 +113,8 @@ final class AIService {
 
         // Create a fresh session with system instructions
         let instructions = contextManager.buildInstructions(name: profileData.name, tone: tone)
-        session = LanguageModelSession {
+        let session = LanguageModelSession {
             instructions
-        }
-
-        guard let session else {
-            throw AIServiceError.sessionNotAvailable
         }
 
         // Stream the response
@@ -184,15 +181,12 @@ final class AIService {
 }
 
 enum AIServiceError: LocalizedError {
-    case sessionNotAvailable
     case generationFailed(String)
     case modelNotDownloaded
     case guardrailBlocked
 
     var errorDescription: String? {
         switch self {
-        case .sessionNotAvailable:
-            "AI model session is not available."
         case .generationFailed(let reason):
             "Failed to generate response: \(reason)"
         case .modelNotDownloaded:

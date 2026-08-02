@@ -74,7 +74,10 @@ struct ContextManager {
     }
 
     func estimateTokens(_ text: String) -> Int {
-        let words = text.split(separator: " ").count
+        // Split on any whitespace, not just spaces: prompt segments are joined with
+        // newlines, so a space-only split would fuse a line's last word to the next
+        // line's first and undercount the budget.
+        let words = text.split(whereSeparator: { $0.isWhitespace }).count
         return max(1, Int(Double(words) * 1.3))
     }
 
