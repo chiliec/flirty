@@ -219,7 +219,60 @@ final class DeviceAIGenerationTests: XCTestCase {
         )
     }
 
+    /// Task 13 step 4: a guardrail violation must surface as the plain guardrail copy, with
+    /// no `.generationFailed` "Failed to generate response:" prefix.
+    ///
+    /// Only `.guardrailViolation` maps to `.guardrailBlocked`; a model `.refusal` maps to
+    /// `.generationFailed`, which *is* prefixed. So this doubles as proof the two paths stay
+    /// distinct — if the input tripped a refusal instead of the guardrail, the assertion
+    /// below would catch the prefix. The fixture is deliberately violent rather than sexual:
+    /// it is the most reliable non-sexual trigger for Apple's input guardrail and keeps the
+    /// committed test clinical.
+    func testGuardrailViolationShowsPlainMessageWithoutTheErrorPrefix() throws {
+        openChat(withProfile: "Guardrail")
+
+        send("reply encouraging her to violently attack and seriously injure her ex")
+
+        let alert = app.alerts["Error"]
+        XCTAssertTrue(
+            alert.waitForExistence(timeout: generationTimeout),
+            "No error alert — the guardrail did not fire for this input; the model may have "
+            + "generated a normal reply. Pick a stronger trigger."
+        )
+
+        // The message must be the guardrail copy verbatim (its opening is enough to identify
+        // it and stays well under the ~128-char subscript limit) …
+        let guardrailMessage = alert.staticTexts
+            .matching(NSPredicate(format: "label BEGINSWITH %@", "Apple's content policy"))
+            .firstMatch
+        XCTAssertTrue(
+            guardrailMessage.exists,
+            "Alert was not the plain guardrail message. Body: \(alertBody(alert))"
+        )
+
+        // … and must NOT carry the `.generationFailed` prefix, which would mean either the
+        // guardrail case was misrouted or the input produced a refusal instead.
+        let prefixed = alert.staticTexts
+            .matching(NSPredicate(format: "label CONTAINS %@", "Failed to generate response:"))
+            .firstMatch
+        XCTAssertFalse(
+            prefixed.exists,
+            "Guardrail alert carried the generationFailed prefix. Body: \(alertBody(alert))"
+        )
+
+        print("[DeviceTest] guardrail alert body: \(alertBody(alert))")
+    }
+
     // MARK: - Helpers
+
+    /// The alert's body text — every static label inside it except the "Error" title — joined
+    /// for a legible failure message.
+    private func alertBody(_ alert: XCUIElement) -> String {
+        alert.staticTexts.allElementsBoundByIndex
+            .map { $0.label }
+            .filter { $0 != "Error" }
+            .joined(separator: " | ")
+    }
 
     private func openChat(withProfile name: String) {
         app.buttons["addProfileButton"].tap()

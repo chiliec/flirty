@@ -2116,11 +2116,26 @@ Required" — the latter may be unreachable on iOS 26. Verified on an iPhone 17e
 6. While the model is genuinely downloading, confirm the 15s poll added in
    `4ef8026` clears the gate with no user action at all
 
-- [ ] **Step 4: Verify generation error messages**
+- [x] **Step 4: Verify generation error messages** (fixes `222ea93`)
+      — **automated and green on device 2026-08-02**
 
 `222ea93` maps every `GenerationError` case to user-facing text. Guardrail
-violations are the easiest to trigger deliberately — confirm the alert reads as
-the plain guardrail message, with no "Failed to generate response:" prefix.
+violations are the easiest to trigger deliberately — the alert must read as the
+plain guardrail message, with no "Failed to generate response:" prefix.
+
+Covered by `DeviceAIGenerationTests.testGuardrailViolationShowsPlainMessageWithoutTheErrorPrefix`
+(17s — the input guardrail fires before any generation runs). A deliberately
+violent fixture message trips Apple's input guardrail; the test then asserts the
+"Error" alert body BEGINSWITH the guardrail copy and does **not** contain
+"Failed to generate response:". Because only `.guardrailViolation` maps to
+`.guardrailBlocked` (a model `.refusal` maps to the prefixed `.generationFailed`),
+the absence-of-prefix check also proves the guardrail and refusal paths stay
+distinct. The fixture is violent rather than sexual: the most reliable non-sexual
+input-guardrail trigger, and it keeps the committed test clinical.
+
+Only Steps 2 (SwiftData migration) and 3 (availability-gate recovery) remain
+manual — both need sequential installs or Settings toggling that XCUITest cannot
+drive.
 
 ---
 
