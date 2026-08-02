@@ -2092,22 +2092,33 @@ Whether the *reply* visibly uses a summarized-away detail is a judgement call
 and stays a printed observation, not an assertion; that the stored summary
 reaches the prompt is covered by `ContextManagerTests`.
 
-- [ ] **Step 2: Verify the SwiftData migration**
+- [x] **Step 2: Verify the SwiftData migration** (fixes `b16c76e`)
+      — **verified on device 2026-08-02**
 
-`summarizedExchangeCount` was added to `WomanProfile` in `b16c76e`. Install
-over a build that predates it and confirm existing profiles load. If the store
-fails to open, delete and reinstall — acceptable pre-release, but worth knowing.
+`summarizedExchangeCount` was added to `WomanProfile` in `b16c76e`. Install over a
+build that predates it and confirm existing profiles load.
 
-**Low-risk by construction (code review 2026-08-02).** The container is the
+**Low-risk by construction, then confirmed empirically.** The container is the
 default `.modelContainer(for:)` in `FlirtyApp` — no `VersionedSchema` or
 `SchemaMigrationPlan` — so SwiftData applies implicit lightweight migration. The
-only schema delta from a pre-`b16c76e` build is `summarizedExchangeCount: Int = 0`
-(new non-optional but **defaulted**) and `conversationSummary: String?`
-(optional). Both satisfy lightweight migration's constraints, and existing rows
-load as `summarizedExchangeCount = 0` / `conversationSummary = nil` — identical to
-a fresh profile, which is correct (nothing summarized yet). The device check is a
-confirmation, not an open risk; the delete-and-reinstall fallback should not be
-needed.
+only schema delta from `09a6c18` (the last commit before `b16c76e`) is
+`summarizedExchangeCount: Int = 0`, a single new non-optional but **defaulted**
+`Int`; `conversationSummary: String?` already existed at `09a6c18`. A defaulted
+non-optional satisfies lightweight migration's constraints.
+
+Verified on the iPhone 17e: built `09a6c18` from a worktree, seeded a persistent
+`MigrationTest` profile (a UI test relaunched **without** `--ui-testing` so it hit
+the on-disk store, not the in-memory `--ui-testing` one), then `devicectl`
+**upgrade-installed** the current build over it and launched. A temporary
+launch-time diagnostic printed `[MigrationDiag] profiles=1` with no crash — the
+old-schema store migrated in place and the existing profile loaded.
+
+**Harness note for anyone re-running this.** `xcodebuild test` clean-installs the
+app-under-test and **wipes the data container on every run** (proved directly: a
+same-build seed-then-read lost the seeded profile). So the old→new store handoff
+must be done with `devicectl device install app` (an upgrade install that
+preserves data), *not* by running a second `xcodebuild test`. The seed and the
+diagnostic were throwaway — reverted, not committed.
 
 - [ ] **Step 3: Verify the availability gate recovers** (fixes `68d1e46`)
 
