@@ -78,6 +78,8 @@ struct ContextManager {
         return max(1, Int(Double(words) * 1.3))
     }
 
+    /// Keeps the most *recent* exchanges within budget — the verbatim window, where the
+    /// latest messages matter most. Drops from the front.
     func trimExchanges(_ exchanges: [Exchange], maxTokens: Int) -> [Exchange] {
         var result: [Exchange] = []
         var tokenCount = 0
@@ -88,6 +90,28 @@ struct ContextManager {
                 break
             }
             result.insert(exchange, at: 0)
+            tokenCount += exchangeTokens
+        }
+
+        return result
+    }
+
+    /// Keeps the *oldest* exchanges within budget, contiguous from the front. The
+    /// summarization batch must stay flush against what the stored summary already
+    /// covers: whatever this returns is exactly what gets folded in, and the persisted
+    /// count advances by its length — so dropping from the *back* (unlike the verbatim
+    /// window) leaves the newer, still-unsummarized exchanges for the next pass instead
+    /// of marking them covered and losing them.
+    func trimOldestExchanges(_ exchanges: [Exchange], maxTokens: Int) -> [Exchange] {
+        var result: [Exchange] = []
+        var tokenCount = 0
+
+        for exchange in exchanges {
+            let exchangeTokens = estimateTokens(exchange.herMessage) + estimateTokens(exchange.response)
+            if tokenCount + exchangeTokens > maxTokens && !result.isEmpty {
+                break
+            }
+            result.append(exchange)
             tokenCount += exchangeTokens
         }
 
@@ -153,7 +177,7 @@ struct ContextManager {
         // ones that aged out since then need another summarization pass. Without this
         // the summary would be rebuilt from scratch (or never refreshed) every time.
         let alreadySummarized = min(max(profile.summarizedExchangeCount, 0), olderExchanges.count)
-        let newlyAged = trimExchanges(
+        let newlyAged = trimOldestExchanges(
             Array(olderExchanges.dropFirst(alreadySummarized)),
             maxTokens: summarizationInputBudget
         )
@@ -177,7 +201,10 @@ struct ContextManager {
             prompt: prompt,
             needsSummarization: !newlyAged.isEmpty,
             exchangesToSummarize: newlyAged,
-            summarizedThroughCount: olderExchanges.count
+            // Only count what was actually summarized. If the budget dropped the tail of
+            // the batch, those exchanges stay uncovered for the next pass rather than
+            // being silently marked folded-in.
+            summarizedThroughCount: alreadySummarized + newlyAged.count
         )
     }
 }

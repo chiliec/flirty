@@ -187,6 +187,31 @@ struct ContextManagerTests {
         #expect(context.exchangesToSummarize.first?.herMessage == "Her message 2")
     }
 
+    @Test("Counts only the exchanges the budget actually let it summarize")
+    func summarizationCountReflectsBudgetTruncation() {
+        let manager = ContextManager()
+        // Each exchange is deliberately large, so the aged-out batch overflows the
+        // summarization budget and only a prefix of it can be folded in this pass.
+        let filler = String(repeating: "word ", count: 90)
+        let exchanges = (0..<15).map {
+            ContextManager.Exchange(herMessage: "Her \($0) \(filler)", response: "Reply \($0) \(filler)")
+        }
+        let context = manager.prepareContext(
+            profile: WomanProfileData(name: "Anna", notes: [], conversationSummary: nil, exchanges: exchanges),
+            herMessage: "Hey",
+            userContext: nil,
+            tone: .sweet
+        )
+
+        // 15 exchanges → 12 age out of the verbatim window, but the budget admits fewer.
+        #expect(context.needsSummarization)
+        #expect(context.exchangesToSummarize.count < 12)
+        // The count must match what was summarized, not the full aged-out set, and must
+        // start from the oldest so the tail stays uncovered for the next pass.
+        #expect(context.summarizedThroughCount == context.exchangesToSummarize.count)
+        #expect(context.exchangesToSummarize.first?.herMessage.hasPrefix("Her 0 ") == true)
+    }
+
     @Test("Folds the previous summary into an incremental summarization prompt")
     func summarizationPromptCarriesPreviousSummary() {
         let manager = ContextManager()
