@@ -2065,16 +2065,32 @@ tap did nothing; and had the guard passed it would have appended a second
 The four steps below remain and are genuinely manual — each needs a person
 holding a conversation or toggling Settings.
 
-- [ ] **Step 1: Verify conversation summarization end-to-end** (fixes `b16c76e`)
+- [x] **Step 1: Verify conversation summarization end-to-end** (fixes `b16c76e`)
+      — **automated and green on device 2026-08-02**
 
 Summaries were previously generated and thrown away — `conversationSummary`
 was never written, so the model never saw history past the last 3 exchanges.
 
-1. Hold a conversation of 5+ exchanges with one profile
-2. Confirm `WomanProfile.conversationSummary` is non-nil after exchange 4
-3. Confirm `summarizedExchangeCount` advances as older exchanges age out,
-   and that summarization does **not** re-run when nothing new has aged out
-4. Confirm the generated reply reflects context from summarized-away messages
+Covered by `DeviceAIGenerationTests.testSummarizationFoldsAgedOutExchangesIntoTheStoredSummary`
+(45s, seven real generations). It reads state through the `--ui-testing`-only
+`summaryDiagnostic` label in `ChatView`, since neither field is otherwise
+observable outside a debugger, and asserts:
+
+1. Nothing is summarized while all four stored exchanges still fit the verbatim
+   window (`summarized:0`, empty summary)
+2. The fifth generation ages out exchange 1 → `summarized:1` with a non-empty
+   summary
+3. That summary still carries exchange 1's content, so aged-out context is
+   forwarded rather than lost
+4. The sixth generation folds exchange 2 in → `summarized:2`, summary text
+   changed (incremental refresh, not a stale summary)
+5. Regeneration, which drops the replayed exchange from the history so nothing
+   new ages out, leaves the diagnostic byte-identical — summarization does not
+   re-run
+
+Whether the *reply* visibly uses a summarized-away detail is a judgement call
+and stays a printed observation, not an assertion; that the stored summary
+reaches the prompt is covered by `ContextManagerTests`.
 
 - [ ] **Step 2: Verify the SwiftData migration**
 

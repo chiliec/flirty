@@ -16,8 +16,12 @@ struct ChatView: View {
 
     @State private var aiService = AIService()
 
+    private var isUITesting: Bool {
+        ProcessInfo.processInfo.arguments.contains("--ui-testing")
+    }
+
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             AppTheme.background.ignoresSafeArea()
 
             ScrollViewReader { scrollProxy in
@@ -39,6 +43,10 @@ struct ChatView: View {
                         scrollProxy.scrollTo("bottom")
                     }
                 }
+            }
+
+            if isUITesting {
+                summaryDiagnostic
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -78,6 +86,37 @@ struct ChatView: View {
         .onAppear {
             aiService.prewarm()
         }
+    }
+
+    // MARK: - Summarization Diagnostic
+
+    /// `conversationSummary` and `summarizedExchangeCount` drive the whole token budget but
+    /// never reach the UI, so on a device they are only observable in a debugger — and the
+    /// summarization path cannot be exercised on the simulator at all. This renders them
+    /// under `--ui-testing` only, so `DeviceAIGenerationTests` can assert on them.
+    ///
+    /// It sits in the ZStack rather than the scrolling stack deliberately: after five
+    /// exchanges the top of the history has scrolled away, and the test must still be able
+    /// to read the current values.
+    private var summaryDiagnostic: some View {
+        Text(summaryDiagnosticText)
+            .font(.system(size: 9, design: .monospaced))
+            .foregroundStyle(AppTheme.textMuted)
+            .lineLimit(1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .allowsHitTesting(false)
+            .accessibilityIdentifier("summaryDiagnostic")
+    }
+
+    /// A whole label the test can compare for equality: the count proves aged-out exchanges
+    /// were tracked, and the summary text itself follows so a test can tell "did not
+    /// re-summarize" apart from "re-summarized to something similar", and can check that
+    /// content from a summarized-away exchange actually survived. Only the *display* is
+    /// truncated to one line — the accessibility label carries the full string.
+    private var summaryDiagnosticText: String {
+        let summary = profile.conversationSummary ?? ""
+        return "summarized:\(profile.summarizedExchangeCount) summary:\(summary)"
     }
 
     // MARK: - Conversation History
