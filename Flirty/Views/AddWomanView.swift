@@ -74,8 +74,8 @@ struct AddWomanView: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { save() }
-                        .foregroundStyle(name.isEmpty ? AppTheme.textMuted : AppTheme.violet)
-                        .disabled(name.isEmpty)
+                        .foregroundStyle(name.trimmingCharacters(in: .whitespaces).isEmpty ? AppTheme.textMuted : AppTheme.violet)
+                        .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
                         .accessibilityIdentifier("saveButton")
                 }
             }
