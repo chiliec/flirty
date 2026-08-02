@@ -93,14 +93,37 @@ final class DeviceAIGenerationTests: XCTestCase {
         }
 
         XCTAssertNotEqual(second, first, "Regenerate did not produce a new response")
-        print("[DeviceTest] first: \(first)")
-        print("[DeviceTest] regenerated: \(second)")
 
-        // Regeneration must replace the reply in place, not append a second exchange for
-        // the same message — that was the other half of the original bug.
+        // `second` is only a partial stream snapshot — the loop breaks on the first token
+        // that differs. Wait for the action row to come back (safe in the existence
+        // direction) so the assertions below see the *finished* response.
+        XCTAssertTrue(
+            copyButton.waitForExistence(timeout: generationTimeout),
+            "Regenerated response never completed"
+        )
+        let final = app.staticTexts["responseText"].label
+        XCTAssertFalse(final.isEmpty, "Regenerated response was empty")
+        XCTAssertNotEqual(final, "Thinking...", "Regenerated response stuck on placeholder")
+        print("[DeviceTest] first: \(first)")
+        print("[DeviceTest] regenerated: \(final)")
+
+        // Regeneration must overwrite the stored reply in place, not append a second
+        // exchange for the same message — that was the other half of the original bug.
+        // Leave and re-enter so these read persisted SwiftData, not the live bubble.
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.staticTexts["Regenerating"].waitForExistence(timeout: 10))
+        app.staticTexts["Regenerating"].tap()
+        XCTAssertTrue(app.textFields["herMessageField"].waitForExistence(timeout: 10))
+
+        // Together these two prove overwrite-in-place: exactly one exchange still exists,
+        // and it now holds the regenerated text, so the old reply cannot have survived.
         XCTAssertEqual(
             herLabelCount(), exchangesBefore,
             "Regenerate appended a duplicate exchange instead of replacing the reply"
+        )
+        XCTAssertTrue(
+            historyText(startingWith: final).waitForExistence(timeout: 15),
+            "Regenerated response was not written back to the stored exchange"
         )
     }
 
@@ -126,7 +149,7 @@ final class DeviceAIGenerationTests: XCTestCase {
             "Her message did not persist across navigation"
         )
         XCTAssertTrue(
-            app.staticTexts[generated].waitForExistence(timeout: 15),
+            historyText(startingWith: generated).waitForExistence(timeout: 15),
             "Generated response did not persist across navigation"
         )
     }
@@ -154,6 +177,18 @@ final class DeviceAIGenerationTests: XCTestCase {
         let generate = app.buttons["generateButton"]
         XCTAssertTrue(generate.isEnabled, "Generate button stayed disabled with text entered")
         generate.tap()
+    }
+
+    /// Looks up a rendered response by its opening characters.
+    ///
+    /// `app.staticTexts[someLongString]` cannot be used for model output: XCUITest throws
+    /// "Invalid query - string identifier is too long" past ~128 characters, and responses
+    /// regularly run longer. A prefix predicate is not subject to that limit.
+    private func historyText(startingWith text: String) -> XCUIElement {
+        let probe = String(text.prefix(60))
+        return app.staticTexts
+            .matching(NSPredicate(format: "label BEGINSWITH %@", probe))
+            .firstMatch
     }
 
     /// Each stored exchange renders exactly one "Her:" caption in `conversationHistory`,
