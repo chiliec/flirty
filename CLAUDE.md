@@ -12,7 +12,13 @@ xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'platform=
 # UI tests on simulator: DeviceAIGenerationTests must be skipped — it hits the real model.
 xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' -only-testing:FlirtyUITests -skip-testing:FlirtyUITests/DeviceAIGenerationTests
 
-# The real generation path, physical device with Apple Intelligence enabled only:
+# The real generation path, physical device with Apple Intelligence enabled only.
+# UNLOCK THE PHONE FIRST and set Auto-Lock to Never (Display & Brightness): a locked
+# device installs the runner and then hangs forever instead of failing, because
+# xcodebuild never surfaces SpringBoard's `FBSOpenApplicationErrorDomain error 7
+# (Locked)`. A 120s generation timeout easily outlives a 30s auto-lock. To confirm a
+# suspected lock rather than waiting it out:
+#   xcrun devicectl device process launch --device <udid> com.flirty.app
 xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'id=<device-udid>' -only-testing:FlirtyUITests/DeviceAIGenerationTests
 
 xcodebuild test ... -only-testing:FlirtyTests/ContextManagerTests/testName

@@ -2043,6 +2043,28 @@ automated UI suite (`-only-testing:FlirtyUITests`, 10 tests). The items below
 are the ones that cannot be checked on the simulator: it has no Apple
 Intelligence, and `--ui-testing` forces availability to `.available`.
 
+**Update 2026-08-02 (`1211e3b`, `a72cb06`): the generation path is now
+automated.** `FlirtyUITests/DeviceAIGenerationTests` runs against the real model
+on hardware — 4/4 green on an iPhone 17e — covering streaming to completion,
+copy confirmation, regeneration producing a fresh reply that is written back to
+the stored exchange, and history surviving navigation. Run it with:
+
+```bash
+xcodebuild test -project Flirty.xcodeproj -scheme Flirty \
+  -destination 'id=<device-udid>' \
+  -only-testing:FlirtyUITests/DeviceAIGenerationTests
+```
+
+Writing those tests surfaced a bug no simulator test could have: **Regenerate was
+completely dead** once a response had landed. It called `generateResponse()`,
+which reads `herMessage` — cleared on success — behind a non-empty guard, so the
+tap did nothing; and had the guard passed it would have appended a second
+`Conversation` instead of replacing the reply. Fixed in `1211e3b` via
+`regenerateLastResponse()`.
+
+The four steps below remain and are genuinely manual — each needs a person
+holding a conversation or toggling Settings.
+
 - [ ] **Step 1: Verify conversation summarization end-to-end** (fixes `b16c76e`)
 
 Summaries were previously generated and thrown away — `conversationSummary`
@@ -2062,10 +2084,21 @@ fails to open, delete and reinstall — acceptable pre-release, but worth knowin
 
 - [ ] **Step 3: Verify the availability gate recovers** (fixes `68d1e46`)
 
-1. Disable Apple Intelligence in Settings, launch Flirty → "Apple Intelligence Required"
+Expectations here were written before the `modelNotReady` finding and have been
+corrected: with Apple Intelligence switched off, iOS 26 reports
+`.unavailable(.modelNotReady)`, **not** `.appleIntelligenceNotEnabled`. The
+screen to expect is therefore "AI Model Not Ready", not "Apple Intelligence
+Required" — the latter may be unreachable on iOS 26. Verified on an iPhone 17e.
+
+1. Disable Apple Intelligence in Settings, launch Flirty → "AI Model Not Ready"
 2. Tap Try Again → screen stays (still disabled)
-3. Enable Apple Intelligence in Settings, return to Flirty **without force-quitting**
-4. Confirm the app moves to the main list on its own via the `scenePhase` re-check
+3. Tap Open Settings → lands on Flirty's own pane (`openSettingsURLString`
+   cannot target system panes; the copy tells the user to navigate up to
+   Apple Intelligence & Siri). Confirm the copy reads correctly.
+4. Enable Apple Intelligence in Settings, return to Flirty **without force-quitting**
+5. Confirm the app moves to the main list on its own via the `scenePhase` re-check
+6. While the model is genuinely downloading, confirm the 15s poll added in
+   `4ef8026` clears the gate with no user action at all
 
 - [ ] **Step 4: Verify generation error messages**
 
