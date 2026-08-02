@@ -2098,6 +2098,17 @@ reaches the prompt is covered by `ContextManagerTests`.
 over a build that predates it and confirm existing profiles load. If the store
 fails to open, delete and reinstall — acceptable pre-release, but worth knowing.
 
+**Low-risk by construction (code review 2026-08-02).** The container is the
+default `.modelContainer(for:)` in `FlirtyApp` — no `VersionedSchema` or
+`SchemaMigrationPlan` — so SwiftData applies implicit lightweight migration. The
+only schema delta from a pre-`b16c76e` build is `summarizedExchangeCount: Int = 0`
+(new non-optional but **defaulted**) and `conversationSummary: String?`
+(optional). Both satisfy lightweight migration's constraints, and existing rows
+load as `summarizedExchangeCount = 0` / `conversationSummary = nil` — identical to
+a fresh profile, which is correct (nothing summarized yet). The device check is a
+confirmation, not an open risk; the delete-and-reinstall fallback should not be
+needed.
+
 - [ ] **Step 3: Verify the availability gate recovers** (fixes `68d1e46`)
 
 Expectations here were written before the `modelNotReady` finding and have been
