@@ -236,4 +236,108 @@ struct ContextManagerTests {
 
         #expect(context.prompt.contains("Earlier chat about hiking."))
     }
+
+    // MARK: - Token estimation
+
+    @Test("Counts words across any whitespace, not just spaces")
+    func estimatesTokensAcrossWhitespace() {
+        let manager = ContextManager()
+        // The same seven words, joined by spaces vs. the newlines/tabs that stitch prompt
+        // segments together. A space-only split fused "hello\nYou" into one word and
+        // undercounted; the estimate must not depend on which whitespace separates words.
+        let spaced = "Her hello You replied hey there friend"
+        let mixed = "Her hello\nYou replied\they there friend"
+        #expect(manager.estimateTokens(spaced) == manager.estimateTokens(mixed))
+    }
+
+    @Test("Estimates at least one token for empty or whitespace-only text")
+    func estimatesMinimumTokenFloor() {
+        let manager = ContextManager()
+        #expect(manager.estimateTokens("") == 1)
+        #expect(manager.estimateTokens("   \n\t ") == 1)
+    }
+
+    // MARK: - Directional trimming
+
+    @Test("trimExchanges keeps the newest, trimOldestExchanges keeps the oldest")
+    func directionalTrimming() {
+        let manager = ContextManager()
+        // Each exchange is ~4 estimated tokens ("Her N" + "Reply N", two words each), so a
+        // 12-token budget admits exactly three.
+        let exchanges = (0..<6).map {
+            ContextManager.Exchange(herMessage: "Her \($0)", response: "Reply \($0)")
+        }
+
+        let newest = manager.trimExchanges(exchanges, maxTokens: 12)
+        let oldest = manager.trimOldestExchanges(exchanges, maxTokens: 12)
+
+        #expect(newest.count == 3)
+        #expect(oldest.count == 3)
+        // trimExchanges drops from the front (older end); trimOldestExchanges drops from the
+        // back (newer end). Same budget, opposite survivors — the whole point of the split.
+        #expect(newest.first?.herMessage == "Her 3")
+        #expect(newest.last?.herMessage == "Her 5")
+        #expect(oldest.first?.herMessage == "Her 0")
+        #expect(oldest.last?.herMessage == "Her 2")
+    }
+
+    @Test("Both trims keep at least one exchange even when it exceeds the budget")
+    func keepsAtLeastOneOverBudgetExchange() {
+        let manager = ContextManager()
+        let oversized = ContextManager.Exchange(
+            herMessage: String(repeating: "word ", count: 100),
+            response: String(repeating: "word ", count: 100)
+        )
+        #expect(manager.trimExchanges([oversized], maxTokens: 10).count == 1)
+        #expect(manager.trimOldestExchanges([oversized], maxTokens: 10).count == 1)
+    }
+
+    // MARK: - Stored-count clamping
+
+    @Test("Clamps a stored summary count that exceeds the aged-out exchanges")
+    func clampsOverlargeSummarizedCount() {
+        let manager = ContextManager()
+        // 5 exchanges → only 2 age out of the verbatim window, but a corrupt stored count
+        // claims 99 are already summarized. It must clamp, not drop past the front.
+        let context = manager.prepareContext(
+            profile: profile(exchangeCount: 5, summary: "Old.", summarizedExchangeCount: 99),
+            herMessage: "Hey",
+            userContext: nil,
+            tone: .sweet
+        )
+
+        #expect(!context.needsSummarization)
+        #expect(context.exchangesToSummarize.isEmpty)
+        #expect(context.summarizedThroughCount == 2)
+    }
+
+    @Test("Treats a negative stored summary count as zero")
+    func clampsNegativeSummarizedCount() {
+        let manager = ContextManager()
+        let context = manager.prepareContext(
+            profile: profile(exchangeCount: 5, summarizedExchangeCount: -3),
+            herMessage: "Hey",
+            userContext: nil,
+            tone: .sweet
+        )
+
+        // Behaves as if nothing was summarized: both aged-out exchanges are fresh.
+        #expect(context.needsSummarization)
+        #expect(context.summarizedThroughCount == 2)
+        #expect(context.exchangesToSummarize.count == 2)
+        #expect(context.exchangesToSummarize.first?.herMessage == "Her message 0")
+    }
+
+    @Test("Omits the fold-in header when there is no previous summary")
+    func summarizationPromptWithoutPreviousSummary() {
+        let manager = ContextManager()
+        let exchange = ContextManager.Exchange(herMessage: "Hi", response: "Hey")
+
+        for previous in [nil, ""] as [String?] {
+            let prompt = manager.buildSummarizationPrompt(previousSummary: previous, exchanges: [exchange])
+            #expect(!prompt.contains("Summary of the conversation so far"))
+            #expect(!prompt.contains("Fold these newer messages"))
+            #expect(prompt.contains("Hi"))
+        }
+    }
 }
