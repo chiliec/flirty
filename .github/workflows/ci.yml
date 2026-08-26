@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  XCODE_APP: /Applications/Xcode_26.4.app
+  IOS_DESTINATION: platform=iOS Simulator,name=iPhone 16 Pro Max
+
+jobs:
+  xcode:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: Select Xcode
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate
+      - name: Build app
+        run: |
+          xcodebuild build \
+            -project Flirty.xcodeproj \
+            -scheme Flirty \
+            -destination "$IOS_DESTINATION" \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Run FlirtyTests
+        run: |
+          xcodebuild test \
+            -project Flirty.xcodeproj \
+            -scheme Flirty \
+            -destination "$IOS_DESTINATION" \
+            -only-testing:FlirtyTests \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Run FlirtyUITests
+        run: |
+          # DeviceAIGenerationTests needs real Apple Intelligence hardware and
+          # fails by design on simulator — see FlirtyUITests/DeviceAIGenerationTests.swift.
+          xcodebuild test \
+            -project Flirty.xcodeproj \
+            -scheme Flirty \
+            -destination "$IOS_DESTINATION" \
+            -only-testing:FlirtyUITests \
+            -skip-testing:FlirtyUITests/DeviceAIGenerationTests \
+            CODE_SIGNING_ALLOWED=NO
