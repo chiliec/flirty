@@ -7,7 +7,7 @@ on:
 
 env:
   XCODE_APP: /Applications/Xcode_26.4.app
-  IOS_DESTINATION: platform=iOS Simulator,name=iPhone 16 Pro Max
+  IOS_DESTINATION: platform=iOS Simulator,name=iPhone 17,OS=latest
 
 jobs:
   xcode:
