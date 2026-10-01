@@ -113,7 +113,7 @@ xcodebuild -exportArchive -archivePath build/Flirty.xcarchive -exportOptionsPlis
 
 It fails with `missingApp(bundleId: "com.flirty.app")` until the app record exists: App Store Connect → Apps → + → New App (iOS, bundle ID com.flirty.app, SKU flirty-ios). Created 2026-10-01 as "Flirty: Reply Assistant" because "Flirty" was taken; build 1.0 (1) uploaded the same day.
 
-Done in App Store Connect on 2026-10-01: all listing text and screenshots, subtitle, categories, age rating, content rights (no third-party content), privacy policy URL and published nutrition label, price free in all 175 regions, build 1.0 (1) attached to version 1.0, automatic release. Left for the account owner: App Review contact info (name, phone, email), the review notes above, and "Add for Review".
+Done in App Store Connect on 2026-10-01: all listing text and screenshots, subtitle, categories, age rating, content rights (no third-party content), privacy policy URL and published nutrition label, price free in all 175 regions, build 1.0 (1) attached to version 1.0, automatic release. App Review contact info and the notes above are filled in too (contact details copied from `indonesian-app/fastlane/metadata/review_information/`). Only "Add for Review" is left.
 
 ## Screenshots
 
