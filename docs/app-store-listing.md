@@ -100,6 +100,17 @@ xcodebuild -exportArchive -archivePath build/Flirty.xcarchive -exportOptionsPlis
 
 `Config/Secrets.xcconfig` must be present when archiving, or the build ships without a cloud tier and ineligible iPhones see "Device Not Supported". Bump `CURRENT_PROJECT_VERSION` in project.yml before every upload.
 
+Upload with the account signed into Xcode (no API key or issuer ID needed): same export options plus `destination: upload`.
+
+```sh
+sed 's#<key>method</key>#<key>destination</key><string>upload</string><key>method</key>#' \
+  Config/ExportOptions.plist > build/UploadOptions.plist
+xcodebuild -exportArchive -archivePath build/Flirty.xcarchive -exportOptionsPlist build/UploadOptions.plist \
+  -exportPath build/upload -allowProvisioningUpdates
+```
+
+It fails with `missingApp(bundleId: "com.flirty.app")` until the app record exists: App Store Connect → Apps → + → New App (iOS, name Flirty, bundle ID com.flirty.app, any SKU). The name must be unique on the App Store; fall back to "Flirty: Reply Assistant" if "Flirty" is taken.
+
 ## Screenshots
 
 Captured 6.9-inch shots live in `docs/screenshots/6.9/` (1320x2868, iPhone 17 Pro Max). Regenerate with:
