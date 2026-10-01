@@ -3,8 +3,8 @@ iOS 26+ SwiftUI app. Generates romantic chat responses via Apple on-device Found
 
 ## Commands
 ```bash
-xcodegen generate   # rewrites the project; the Flirty scheme is declared in project.yml,
-                    # do NOT hand-edit Flirty.xcscheme — regeneration deletes it
+xcodegen generate   # Flirty.xcodeproj is gitignored and generated from project.yml;
+                    # the scheme is declared there too, do NOT hand-edit Flirty.xcscheme
 
 xcodebuild -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' build
 xcodebuild test -project Flirty.xcodeproj -scheme Flirty -destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' -only-testing:FlirtyTests
@@ -60,7 +60,7 @@ Confirm on a quiet machine before believing a UI-test failure.
 - **The chat `ScrollView` dismisses the keyboard on scroll** (`.scrollDismissesKeyboard(.immediately)`): a swipe on the chat resigns the focused field. `scrollIntoView` in the device tests only swipes before tapping, so it is unaffected, but never swipe between focusing a field and `typeText`.
 - **`.modelNotReady` also means "Apple Intelligence is off"**: Apple documents `appleIntelligenceNotEnabled` and `modelNotReady` as distinct, but they are not. Verified on an iPhone 17e (eligible device, toggle off in Settings): `SystemLanguageModel.default.availability` returns `.unavailable(.modelNotReady)`. The `.notEnabled` branch may be unreachable on iOS 26 — keep it, but the `.notReady` gate copy is what users actually see and must tell them to enable Apple Intelligence, not just to wait for a download.
 - **`--ui-testing` also renders a `summaryDiagnostic` label in `ChatView`**: `conversationSummary` and `summarizedExchangeCount` never reach the UI, so device tests read them from that label (`summarized:<n> summary:<text>`). It lives in the `ZStack`, not the scrolling stack — after five exchanges the top of the history has scrolled away.
-- **No AI verification on simulator**: there is no Apple Intelligence in the simulator, and `--ui-testing` forces `.available`. Any change touching generation, summarization, or the availability gate is unverified until run on a device — see Task 13 in `docs/superpowers/plans/2026-04-13-flirty-app.md`. `FlirtyUITests/DeviceAIGenerationTests` covers the generation path and only passes on hardware.
+- **No AI verification on simulator**: there is no Apple Intelligence in the simulator, and `--ui-testing` forces `.available`. Any change touching generation, summarization, or the availability gate is unverified until run on a device. `FlirtyUITests/DeviceAIGenerationTests` covers the generation path and only passes on hardware.
 - **Never look up model output with a string subscript**: `app.staticTexts[response]` throws `NSInternalInconsistencyException: Invalid query - string identifier is too long` past ~128 characters, and generated responses regularly exceed that. Such a test passes or fails on how verbose the model happened to be. Match a prefix with `NSPredicate(format: "label BEGINSWITH %@", ...)` instead — see `historyText(startingWith:)`.
 - **Never wait on `app.keyboards` on a device**: if the phone's keyboard was last left in the Apple Intelligence Writing Tools panel, the input view publishes `keyboardPanel.*` elements and **no `Keyboard` element matches at all** — the field is focused and `typeText` works, but a keyboard-existence wait fails 100% of the time and looks like a keyboard-focus regression. Wait on the field taking focus instead; XCUIElement has no `hasKeyboardFocus` here, so read the trait off the snapshot (`debugDescription.contains("Keyboard Focused")`) — see `isKeyboardFocused(_:)`.
 - **Only the chat screen scrolls**: a "scroll it into view" helper must wait for hittability *first* and only swipe when the chat is on screen. Swiping a presented sheet (the profile editor) drags it toward dismissal instead of scrolling, which breaks the very tap it was meant to enable.
