@@ -4,7 +4,7 @@ Copy and answers for App Store Connect. Character limits are Apple's.
 
 ## Name (30)
 
-Flirty
+Flirty: Reply Assistant
 
 ## Subtitle (30)
 
@@ -54,7 +54,7 @@ Primary: Lifestyle. Secondary: Social Networking.
 ## URLs
 
 - Support: https://github.com/chiliec/flirty
-- Privacy policy: https://github.com/chiliec/flirty/blob/main/PRIVACY.md — the repo is private as of 2026-10-01; make it public (TalkNative is) or host `PRIVACY.md` elsewhere before submitting, App Review opens this link.
+- Privacy policy: https://github.com/chiliec/flirty/blob/main/PRIVACY.md (repo is public)
 - Marketing: none
 
 The same text is in the app behind the shield icon on the list screen (`PrivacyView`).
@@ -72,7 +72,7 @@ Does the app collect data: **Yes**, one type.
 | User Content > Other User Content | Yes, only in cloud mode | No | No | App Functionality |
 
 Notes for the form:
-- Her message (typed, pasted, or OCR'd from a screenshot on device), the user's notes and context, and the stored conversation summary are sent to the Flirty gateway only when cloud mode is on. Images never leave the device; the photo picker is the privacy-preserving one, so there is no photo-library permission., and only on devices without Apple Intelligence. They are processed transiently and not stored.
+- Her message (typed, pasted, or OCR'd from a screenshot on device), the user's notes and context, and the stored conversation summary are sent to the Flirty gateway only when cloud mode is on. Images never leave the device; the photo picker is the privacy-preserving one, so there is no photo-library permission. Cloud mode only exists on devices without Apple Intelligence. Requests are processed transiently and not stored.
 - No identifiers, contact info, usage data, or diagnostics are collected. No third-party SDKs.
 - Matches `Flirty/PrivacyInfo.xcprivacy`.
 
@@ -109,7 +109,7 @@ xcodebuild -exportArchive -archivePath build/Flirty.xcarchive -exportOptionsPlis
   -exportPath build/upload -allowProvisioningUpdates
 ```
 
-It fails with `missingApp(bundleId: "com.flirty.app")` until the app record exists: App Store Connect → Apps → + → New App (iOS, name Flirty, bundle ID com.flirty.app, any SKU). The name must be unique on the App Store; fall back to "Flirty: Reply Assistant" if "Flirty" is taken.
+It fails with `missingApp(bundleId: "com.flirty.app")` until the app record exists: App Store Connect → Apps → + → New App (iOS, bundle ID com.flirty.app, SKU flirty-ios). Created 2026-10-01 as "Flirty: Reply Assistant" because "Flirty" was taken; build 1.0 (1) uploaded the same day.
 
 ## Screenshots
 
