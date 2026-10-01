@@ -1,3 +1,4 @@
+import PhotosUI
 import SwiftUI
 import SwiftData
 
@@ -5,6 +6,7 @@ struct ChatView: View {
     @Environment(\.modelContext) private var modelContext
     let profile: WomanProfile
 
+    @State private var screenshotItem: PhotosPickerItem?
     @State private var herMessage = ""
     @State private var userContext = ""
     @State private var selectedTone: Tone = .sweet
@@ -28,10 +30,12 @@ struct ChatView: View {
                 ScrollView {
                     VStack(spacing: 12) {
                         conversationHistory
-                        inputArea
+                        // The live reply sits right under her message in the history,
+                        // reading like a chat; the input below is for the next round.
                         if !currentResponse.isEmpty || isGenerating {
                             responseArea
                         }
+                        inputArea
                         Color.clear.frame(height: 1).id("bottom")
                     }
                     .padding(.horizontal, 16)
@@ -43,9 +47,11 @@ struct ChatView: View {
                         scrollProxy.scrollTo("bottom")
                     }
                 }
+                .scrollDismissesKeyboard(.immediately)
             }
 
-            if isUITesting {
+            // Screenshot runs (stubbed reply) never summarize, so the label is noise there.
+            if isUITesting, ProcessInfo.processInfo.environment["FLIRTY_STUB_RESPONSE"] == nil {
                 summaryDiagnostic
             }
         }
@@ -121,6 +127,28 @@ struct ChatView: View {
 
     // MARK: - Conversation History
 
+    /// The saved exchange whose reply is currently shown in `ResponseBubble`; its history
+    /// copy is hidden so the same text is not on screen twice.
+    private var echoedConversationID: UUID? {
+        guard !currentResponse.isEmpty, let last = profile.sortedConversations.last,
+            last.generatedResponse == currentResponse
+        else { return nil }
+        return last.id
+    }
+
+    private func delete(_ conversation: Conversation) {
+        // Keep the stored summary's coverage count honest when a folded-in exchange goes.
+        if let index = profile.sortedConversations.firstIndex(where: { $0.id == conversation.id }),
+            index < profile.summarizedExchangeCount
+        {
+            profile.summarizedExchangeCount -= 1
+        }
+        if conversation.id == echoedConversationID {
+            currentResponse = ""
+        }
+        modelContext.delete(conversation)
+    }
+
     private var conversationHistory: some View {
         ForEach(profile.sortedConversations) { conversation in
             VStack(alignment: .leading, spacing: 8) {
@@ -142,24 +170,31 @@ struct ChatView: View {
                 }
 
                 // Your response
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 4) {
-                        Image(systemName: conversation.tone.icon)
-                            .font(.system(size: 9))
-                        Text("Your \(conversation.tone.displayName.lowercased()) reply:")
-                            .font(.system(size: 10))
-                    }
-                    .foregroundStyle(AppTheme.textMuted)
+                if conversation.id != echoedConversationID {
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 4) {
+                            Image(systemName: conversation.tone.icon)
+                                .font(.system(size: 9))
+                            Text("Your \(conversation.tone.displayName.lowercased()) reply:")
+                                .font(.system(size: 10))
+                        }
+                        .foregroundStyle(AppTheme.textMuted)
 
-                    Text(conversation.generatedResponse)
-                        .font(.system(size: 12))
-                        .foregroundStyle(AppTheme.textSecondary)
-                        .padding(10)
-                        .background(AppTheme.violet.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        Text(conversation.generatedResponse)
+                            .font(.system(size: 12))
+                            .foregroundStyle(AppTheme.textSecondary)
+                            .padding(10)
+                            .background(AppTheme.violet.opacity(0.08))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
                 }
             }
             .padding(.bottom, 4)
+            .contextMenu {
+                Button("Delete", systemImage: "trash", role: .destructive) {
+                    delete(conversation)
+                }
+            }
         }
     }
 
@@ -169,9 +204,37 @@ struct ChatView: View {
         VStack(spacing: 12) {
             // Her message input
             VStack(alignment: .leading, spacing: 4) {
-                Text("Her message:")
-                    .font(.system(size: 10))
-                    .foregroundStyle(AppTheme.textMuted)
+                HStack {
+                    Text("Her message:")
+                        .font(.system(size: 10))
+                        .foregroundStyle(AppTheme.textMuted)
+                    Spacer()
+                    // A chat screenshot is how most people have her message; Vision reads
+                    // it on device. The picker is privacy-preserving, no photo permission.
+                    PhotosPicker(selection: $screenshotItem, matching: .images) {
+                        Image(systemName: "photo.on.rectangle")
+                            .font(.system(size: 14))
+                            .foregroundStyle(AppTheme.violet)
+                    }
+                    .accessibilityIdentifier("screenshotButton")
+                    .onChange(of: screenshotItem) {
+                        Task { await readScreenshot() }
+                    }
+                    // The main flow is copy from Messages, paste here: one tap instead of
+                    // tap-hold-Paste. The system button only enables when text is on the
+                    // clipboard and reads it without the paste permission banner.
+                    PasteButton(payloadType: String.self) { strings in
+                        guard let text = strings.first?.trimmingCharacters(in: .whitespacesAndNewlines),
+                            !text.isEmpty
+                        else { return }
+                        herMessage = text
+                    }
+                    .labelStyle(.iconOnly)
+                    .controlSize(.mini)
+                    .buttonBorderShape(.capsule)
+                    .tint(AppTheme.violet)
+                    .accessibilityIdentifier("pasteButton")
+                }
                 TextField("Paste her message here...", text: $herMessage, axis: .vertical)
                     .textFieldStyle(.plain)
                     .accessibilityIdentifier("herMessageField")
@@ -252,6 +315,26 @@ struct ChatView: View {
                 Task { await regenerateLastResponse() }
             }
         )
+    }
+
+    // MARK: - Screenshot
+
+    private func readScreenshot() async {
+        guard let item = screenshotItem else { return }
+        screenshotItem = nil
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self) else { return }
+            let text = try await ScreenshotReader.text(in: data)
+            guard !text.isEmpty else {
+                errorMessage = "No text found in that image."
+                showError = true
+                return
+            }
+            herMessage = text
+        } catch {
+            errorMessage = "Couldn't read that image: \(error.localizedDescription)"
+            showError = true
+        }
     }
 
     // MARK: - Generation

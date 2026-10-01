@@ -22,24 +22,9 @@ struct ContextManager {
         recentExchanges: [Exchange],
         conversationSummary: String?
     ) -> String {
+        // The persona and rules travel as session instructions (`buildInstructions`);
+        // repeating them here used to cost ~150 tokens of the 4096 budget per call.
         var parts: [String] = []
-
-        // System instructions
-        parts.append("""
-        You are a thoughtful assistant helping craft a message to \(name).
-        Your response should sound natural — like something a real person
-        would actually type in a chat. Match the tone: \(tone.displayName.lowercased()).
-
-        Rules:
-        - Write ONLY the message text, no labels or quotes
-        - Keep it concise (2-4 sentences typically)
-        - Be genuine, not cliche or over-the-top
-        - Use the context provided — never invent facts about the user's life
-        - Match the energy level of her message
-        - If she asked a question, answer it using the user's real context
-
-        \(tone.modifier)
-        """)
 
         // Profile notes
         if !notes.isEmpty {
@@ -150,6 +135,8 @@ struct ContextManager {
         - Be genuine, not cliche or over-the-top
         - Use the context provided — never invent facts about the user's life
         - Match the energy level of her message
+        - Reply in the language she wrote in
+        - If her message is a pasted chat transcript, reply only to her latest message in it
         - If she asked a question, answer it using the user's real context
 
         \(tone.modifier)

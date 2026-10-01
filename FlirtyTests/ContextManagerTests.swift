@@ -17,13 +17,18 @@ struct ContextManagerTests {
             conversationSummary: nil
         )
 
-        #expect(prompt.contains("Anna"))
         #expect(prompt.contains("loves hiking"))
         #expect(prompt.contains("has a cat named Milo"))
         #expect(prompt.contains("Hey! How was your day?"))
         #expect(prompt.contains("Had a great meeting today"))
         #expect(prompt.contains("sweet"))
-        #expect(prompt.contains("warm and affectionate"))
+        // The persona lives in the session instructions, not the prompt — sending it
+        // twice wasted budget.
+        #expect(!prompt.contains("Rules:"))
+        let instructions = manager.buildInstructions(name: "Anna", tone: .sweet)
+        #expect(instructions.contains("Anna"))
+        #expect(instructions.contains("warm and affectionate"))
+        #expect(instructions.contains("Reply in the language she wrote in"))
     }
 
     @Test("Includes recent exchanges in prompt")
