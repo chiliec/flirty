@@ -9,6 +9,14 @@ struct FlirtyApp: App {
         ProcessInfo.processInfo.arguments.contains("--ui-testing")
     }
 
+    init() {
+        // SwiftData is in-memory under --ui-testing, but UserDefaults is not: a consent
+        // left behind by one UI test run would skip the consent screen in the next.
+        if isUITesting {
+            UserDefaults.standard.removeObject(forKey: AIService.cloudConsentKey)
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             RootView(aiService: aiService)
@@ -26,6 +34,7 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var availability: AIAvailability?
     @State private var diagnostic: String?
+    @AppStorage(AIService.cloudConsentKey) private var cloudConsent = false
 
     var body: some View {
         Group {
@@ -33,6 +42,8 @@ struct RootView: View {
                 switch availability {
                 case .available:
                     WomenListView()
+                case .cloudConsentRequired:
+                    CloudConsentView { cloudConsent = true }
                 case .notEnabled:
                     UnavailableView(
                         icon: "brain",
@@ -80,6 +91,9 @@ struct RootView: View {
             // Settings" screen is a dead end that outlives the condition it describes.
             if phase == .active { checkAvailability() }
         }
+        // Consent is granted on the consent screen and revoked from the list toolbar;
+        // both must move the gate without a scene change.
+        .onChange(of: cloudConsent) { checkAvailability() }
         .task(id: availability) {
             // A finishing download is the one transition that happens with no user action
             // and no scene change, so it is the only one the observers above cannot catch —
@@ -96,10 +110,57 @@ struct RootView: View {
 
     private func checkAvailability() {
         if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
-            availability = .available
+            // Simulator has no Apple Intelligence, so force the on-device answer; the
+            // cloud-tier rows are still driven by the real resolver.
+            let simulated = AIService.simulatesIneligibleDevice
+            availability = AIService.resolve(
+                onDevice: simulated ? .notEligible : .available,
+                hasGateway: simulated,
+                consentGiven: cloudConsent
+            )
         } else {
             availability = aiService.checkAvailability()
             diagnostic = aiService.availabilityDiagnostic
+        }
+    }
+}
+
+/// Shown on iPhones without Apple Intelligence before any text leaves the device.
+/// App Store guideline 5.1.2(i) requires explicit permission before sending personal
+/// data to a third-party AI service.
+struct CloudConsentView: View {
+    let onAllow: () -> Void
+
+    var body: some View {
+        ZStack {
+            AppTheme.background.ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                Image(systemName: "icloud")
+                    .font(.system(size: 48))
+                    .foregroundStyle(AppTheme.primaryGradient)
+
+                Text("Use cloud mode?")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                Text(
+                    "This iPhone doesn't support Apple Intelligence, so Flirty can write replies in the cloud instead. Her messages, your notes about her, and your context are sent over HTTPS to the Flirty gateway, which uses Anthropic's Claude model. Nothing else is sent, and there is no account. You can turn this off any time from the cloud icon on the main screen."
+                )
+                .font(.system(size: 14))
+                .foregroundStyle(AppTheme.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 40)
+
+                Button("Allow", action: onAllow)
+                    .font(.system(size: 14, weight: .semibold))
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 10)
+                    .background(AppTheme.primaryGradient)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .accessibilityIdentifier("cloudConsentAllow")
+            }
         }
     }
 }

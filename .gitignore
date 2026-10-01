@@ -62,3 +62,9 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 .claude
+
+# Gateway key (see Config/Secrets.example.xcconfig)
+Config/Secrets.xcconfig
+
+# Local archives/exports
+build/

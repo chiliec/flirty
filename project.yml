@@ -18,8 +18,28 @@ targets:
     platform: iOS
     sources:
       - Flirty
+    configFiles:
+      Debug: Config/Gateway.xcconfig
+      Release: Config/Gateway.xcconfig
+    # Gateway settings reach the app through Info.plist; `GatewayConfig.fromBundle()`
+    # reads them and treats an empty key as "no cloud tier".
+    info:
+      path: Flirty/Info.plist
+      properties:
+        FLGatewayURL: $(FL_GATEWAY_URL)
+        FLGatewayKey: $(FL_GATEWAY_KEY)
+        FLGatewayModel: $(FL_GATEWAY_MODEL)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        # Only standard HTTPS, so no export-compliance prompt on upload.
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: 1
+        # iPhone only — the UI is portrait-only and sized for a phone.
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES

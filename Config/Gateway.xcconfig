@@ -1,0 +1,8 @@
+// Cloud-tier gateway, used only on devices Apple excludes from Apple Intelligence.
+// The key lives in the gitignored Secrets.xcconfig; without it the app builds
+// on-device only. `/$()/` stops xcconfig reading `//` as a comment.
+FL_GATEWAY_URL = https:/$()/gateway.nextgensoft.co
+FL_GATEWAY_KEY =
+FL_GATEWAY_MODEL = claude-haiku-4-5
+
+#include? "Secrets.xcconfig"

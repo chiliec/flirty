@@ -5,6 +5,8 @@ struct WomenListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \WomanProfile.createdAt, order: .reverse) private var profiles: [WomanProfile]
     @State private var showingAddSheet = false
+    @State private var showingPrivacy = false
+    @AppStorage(AIService.cloudConsentKey) private var cloudConsent = false
 
     var body: some View {
         NavigationStack {
@@ -26,6 +28,31 @@ struct WomenListView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        showingPrivacy = true
+                    } label: {
+                        Image(systemName: "lock.shield")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(AppTheme.violet)
+                    }
+                    .accessibilityIdentifier("privacyButton")
+                }
+                // Only the cloud tier has anything to switch off; Apple-Intelligence
+                // devices never see this. Turning it off sends RootView back to consent.
+                if AIService.isCloudTier {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            Toggle("Cloud mode", isOn: $cloudConsent)
+                                .accessibilityIdentifier("cloudModeToggle")
+                        } label: {
+                            Image(systemName: "icloud")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(AppTheme.violet)
+                        }
+                        .accessibilityIdentifier("cloudModeMenu")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
                         showingAddSheet = true
                     } label: {
                         Image(systemName: "plus")
@@ -40,6 +67,9 @@ struct WomenListView: View {
             }
             .sheet(isPresented: $showingAddSheet) {
                 AddWomanView()
+            }
+            .sheet(isPresented: $showingPrivacy) {
+                PrivacyView()
             }
         }
     }
