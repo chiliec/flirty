@@ -61,7 +61,9 @@ The same text is in the app behind the shield icon on the list screen (`PrivacyV
 
 ## Age rating
 
-12+: Infrequent/Mild Mature/Suggestive Themes. The app writes romantic chat replies from user input. Apple's on-device guardrails and the cloud model's own policy block explicit content.
+Questionnaire: everything None/No except Mature or Suggestive Themes = Infrequent. The app writes romantic chat replies from user input. Apple's on-device guardrails and the cloud model's own policy block explicit content.
+
+Apple calculates 9+ from that; overridden to 13+ (shown as 12+ on OSes before 26). Filled in 2026-10-01.
 
 ## App privacy (nutrition labels)
 
@@ -110,6 +112,8 @@ xcodebuild -exportArchive -archivePath build/Flirty.xcarchive -exportOptionsPlis
 ```
 
 It fails with `missingApp(bundleId: "com.flirty.app")` until the app record exists: App Store Connect → Apps → + → New App (iOS, bundle ID com.flirty.app, SKU flirty-ios). Created 2026-10-01 as "Flirty: Reply Assistant" because "Flirty" was taken; build 1.0 (1) uploaded the same day.
+
+Done in App Store Connect on 2026-10-01: all listing text and screenshots, subtitle, categories, age rating, content rights (no third-party content), privacy policy URL and published nutrition label, price free in all 175 regions, build 1.0 (1) attached to version 1.0, automatic release. Left for the account owner: App Review contact info (name, phone, email), the review notes above, and "Add for Review".
 
 ## Screenshots
 
